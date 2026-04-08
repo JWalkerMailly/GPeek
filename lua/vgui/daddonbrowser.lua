@@ -1,0 +1,226 @@
+
+local PANEL = {}
+local EXTENSIONS = {
+
+	-- fallback
+	["default"] = {
+		Icon       = "icon16/page_white.png",
+		Initialize = function() end,
+		Browse     = function() end,
+		RightClick = function() end,
+		Invalidate = function() end
+	}
+}
+
+for k,v in pairs(file.Find("vgui/daddonbrowser/*", "LUA")) do
+
+	local extension = include("vgui/daddonbrowser/" .. v)
+	local extensionName = v:match("(.+)%..+$")
+
+	EXTENSIONS[extensionName] = extension
+end
+
+--- Component Initialization
+-- Initializes the DAddonBrowser panel, creating the horizontal divider layout
+-- and sidebar navigation, then loading all mounted addons into the tree.
+function PANEL:Init()
+
+	self.HorizontalDivider = vgui.Create("DHorizontalDivider", self)
+	self.HorizontalDivider:Dock(FILL)
+	self.HorizontalDivider:SetLeftMin(250)
+	self.HorizontalDivider:SetLeftWidth(192)
+	self.HorizontalDivider:SetRightMin(100)
+	self.HorizontalDivider:SetDividerWidth(6)
+
+	self.ContentNavBar = vgui.Create("ContentSidebar", self.HorizontalDivider)
+	self.HorizontalDivider:SetLeft(self.ContentNavBar)
+
+	self:CreateSearchBar()
+	self:LoadAddons()
+end
+
+function PANEL:CreateSearchBar()
+
+	local container = self.ContentNavBar:Add("DPanel")
+	container:Dock(TOP)
+
+	self.Search = container:Add("DTextEntry")
+	self.Search:Dock(FILL)
+	self.Search:DockMargin(0, 0, 0, 4)
+	self.Search:SetPlaceholderText("#spawnmenu.search")
+	self.Search.OnEnter = function(this, term)
+		self:LoadAddons(term)
+	end
+
+	local searchButton = self.Search:Add("DImageButton")
+	searchButton:SetImage("icon16/magnifier.png")
+	searchButton:SetText("")
+	searchButton:Dock(RIGHT)
+	searchButton:DockMargin(4, 2, 4, 2)
+	searchButton:SetSize(16, 16)
+	searchButton:SetTooltip("#spawnmenu.press_search")
+end
+
+--- Load Addons
+-- Clears and repopulates the navigation tree with all currently installed addons,
+-- sorted alphabetically by title. Unmounted addons are visually flagged.
+function PANEL:LoadAddons(searchTerm)
+
+	self.ContentNavBar.Tree:Clear()
+
+	local addons = engine.GetAddons()
+	table.sort(addons, function(a, b) return a.title < b.title end)
+
+	for k,v in ipairs(addons) do
+
+		if (searchTerm && !string.find(string.lower(v.title), string.lower(searchTerm), 1, true)) then
+			continue
+		end
+
+		self:BuildAddonFolderNode(self.ContentNavBar.Tree, v.title, v.title, nil, v.mounted, v.wsid)
+	end
+
+	self:SetContent()
+end
+
+--- Build Addon Node
+-- Recursively builds the file and folder nodes for a given addon directory.
+-- @param name panel The parent tree node to attach children to.
+-- @param path string The addon path or search path root used for file lookups.
+-- @param dir string|nil The current subdirectory being scanned, or nil for the root.
+function PANEL:BuildAddonNode(name, path, dir)
+
+	local files, folders = file.Find(dir && (dir .. "/*") || "*", path)
+
+	-- recurse addon folders.
+	for k,v in ipairs(folders) do
+		self:BuildAddonFolderNode(name, v, path, dir && (dir .. "/" .. v) || v)
+	end
+
+	-- build file node bindings.
+	for k,v in ipairs(files) do
+		self:BuildAddonFileNode(name, v, path, dir)
+	end
+end
+
+--- Addon Folder Node Builder
+-- Creates a collapsible folder node in the tree. Children are built lazily on
+-- first expand and disposed on collapse to conserve memory. Provides a right-click
+-- menu to copy the directory path to the clipboard.
+-- @param parent panel The parent tree or node to attach this folder node to.
+-- @param name string The display label for the folder node.
+-- @param path string The addon path or search path root used for file lookups.
+-- @param dir string|nil The subdirectory this node represents, or nil for the root.
+-- @param mounted boolean|nil Whether the addon is mounted; unmounted addons show a warning icon.
+-- @param wsid string Workshop id.
+function PANEL:BuildAddonFolderNode(parent, name, path, dir, mounted, wsid)
+
+	local node = parent:AddNode(name, (mounted == false) && "icon16/folder_delete.png" || nil)
+	node:SetDoubleClickToOpen(false)
+
+	node.DoClick = function(this)
+
+		local wasExpanded = this:GetExpanded()
+
+		-- dispose of child nodes when collapsing to save on memory.
+		if (wasExpanded) then
+			for k,v in pairs(this:GetChildNodes()) do
+				v:Remove()
+			end
+		else
+			if (!this.Built) then
+				self:BuildAddonNode(this, path, dir)
+			end
+		end
+
+		this.Built = !wasExpanded
+	end
+
+	node.DoRightClick = function(this)
+
+		local menu = DermaMenu()
+
+		if (wsid) then
+			menu:AddOption("#spawnmenu.openaddononworkshop", function()
+				steamworks.ViewFile(wsid)
+			end):SetIcon("icon16/link_go.png")
+		end
+
+		menu:AddOption("#spawnmenu.menu.copy", function()
+			SetClipboardText(dir || path)
+		end):SetIcon("icon16/page_copy.png")
+
+		menu:Open()
+	end
+end
+
+--- Addon File Node Builder
+-- Creates a file leaf in the tree, resolved to its appropriate extension
+-- handler for icon display and content browsing. Provides a right-click menu
+-- to copy the full file path to the clipboard.
+-- @param parent panel The parent tree node to attach this file node to.
+-- @param name string The filename including extension.
+-- @param path string The addon path or search path root used for file lookups.
+-- @param dir string The subdirectory containing this file.
+function PANEL:BuildAddonFileNode(parent, name, path, dir)
+
+	-- fetch file extension plugin for addon browser content.
+	local extension = EXTENSIONS[string.GetExtensionFromFilename(name)] || EXTENSIONS["default"]
+	local node = parent:AddNode(name, extension.Icon)
+
+	node.DoClick = function(this)
+		self:InvalidateExtensions()
+		extension.Initialize(self, name, path, dir)
+		extension.Browse(self, name, path, dir)
+	end
+
+	node.DoRightClick = function(this)
+
+		local menu = DermaMenu()
+
+		menu:AddOption("#spawnmenu.menu.copy", function()
+			SetClipboardText(dir .. "/" .. name)
+		end):SetIcon("icon16/page_copy.png")
+
+		extension.RightClick(menu, name, path, dir)
+
+		menu:Open()
+	end
+end
+
+--- Content Loader
+-- Replaces the right-hand content panel of the divider with the provided panel.
+-- The previous content panel is fully removed to free memory.
+-- @param content panel The new content panel to display on the right side.
+function PANEL:SetContent(content)
+
+	local currentContent = self.HorizontalDivider:GetRight()
+
+	-- dispose of old content completely for memory.
+	if (IsValid(currentContent)) then
+		currentContent:Remove()
+	end
+
+	if (!IsValid(content)) then	return end
+
+	-- display new content now.
+	content:SetVisible(false)
+	self.HorizontalDivider:SetRight(content)
+	self.HorizontalDivider:InvalidateLayout(true)
+	content:SetVisible(true)
+end
+
+--- Invalidation
+-- Calls the Invalidate callback on every registered extension handler,
+-- allowing extensions to clean up or reset any active state or UI they own.
+function PANEL:InvalidateExtensions()
+	for k,v in pairs(EXTENSIONS) do
+		v.Invalidate()
+	end
+end
+
+vgui.Register("DAddonBrowser", PANEL, "EditablePanel")
+
+spawnmenu.AddCreationTab("#spawnmenu.category.addons", function()
+	return vgui.Create("DAddonBrowser")
+end, "icon16/package.png", 999, "")
