@@ -12,8 +12,8 @@ NOPQRSTUVWXYZ
 abcdefghijklm
 nopqrstuvwxyz
 0123456789
-!@#$%^&*()_+-=[
-]{}|;:'",.<>/?~
+!@#$%^&*()[]{}|
+_+-=;:'",.<>/?~
 ]]
 
 local fontRT  = GetRenderTarget("GPeekFontPreview", 1024, 512)
@@ -25,18 +25,29 @@ local fontMat = CreateMaterial("GPeekFontPreview", "UnlitGeneric", {
 
 local function fontDrawPass(context)
 
-	if (!context.DrawPass) then return fontMat end
+	if (context.DrawPass) then
 
-	render.PushRenderTarget(fontRT)
-	cam.Start2D()
-
+		render.PushRenderTarget(fontRT)
+		cam.Start2D()
 		render.Clear(0, 0, 0, 0, true, true)
-		draw.DrawText(preview, "GPeek " .. context.Font)
 
-	cam.End2D()
-	render.PopRenderTarget()
+		if (context.Font) then
 
-	context.DrawPass = false
+			local font = "GPeek " .. context.Font
+
+			EXT.FontEntry:SetFont(font)
+			EXT.FontEntry:SetTall(draw.GetFontHeight(font))
+			EXT.FontEntry:ApplySchemeSettings()
+			EXT.FontEntry:InvalidateLayout(true)
+			draw.DrawText(preview, font)
+		end
+
+		cam.End2D()
+		render.PopRenderTarget()
+
+		EXT.FontEntry:SetVisible(context.Font != nil)
+		context.DrawPass = false
+	end
 
 	return fontMat
 end
@@ -54,7 +65,7 @@ EXT.Initialize = function(browser, name, path, dir)
 	local controls = vgui.Create("DSizeToContents", EXT.Container)
 	controls:SetSizeX(false)
 	controls:Dock(TOP)
-	controls:DockMargin(0, 0, 0, 10)
+	controls:DockMargin(0, 0, 0, 5)
 
 	EXT.FontName = vgui.Create("DLabel", controls)
 	EXT.FontName:Dock(TOP)
@@ -67,9 +78,14 @@ EXT.Initialize = function(browser, name, path, dir)
 	fontScale:SetDark(true)
 	fontScale:SizeToContents()
 	fontScale:Dock(TOP)
+	fontScale:DockMargin(0, 0, 0, 10)
 	fontScale.OnValueChanged = function(this, val)
 		EXT.Preview.FontScale = math.Clamp(val, 0.4, 1.6)
 	end
+
+	EXT.FontEntry = vgui.Create("DTextEntry", controls)
+	EXT.FontEntry:Dock(TOP)
+	EXT.FontEntry:SetText("The quick brown fox jumps over the lazy dog.")
 
 	EXT.Preview = vgui.Create("DPanel", EXT.Container)
 	EXT.Preview:Dock(FILL)
@@ -85,8 +101,7 @@ EXT.Browse = function(browser, name, path, dir)
 	EXT.FileName:SetText("/" .. dir .. "/" .. name)
 
 	local font = ttfname.readFromFile(dir .. "/" .. name)
-	if (!font) then return end
-	if (!FONTS[font]) then
+	if (font && !FONTS[font]) then
 
 		surface.CreateFont("GPeek " .. font, {
 			font = font,
@@ -96,7 +111,7 @@ EXT.Browse = function(browser, name, path, dir)
 		FONTS[font] = true
 	end
 
-	EXT.FontName:SetText(font)
+	EXT.FontName:SetText(font || "Could not load font.")
 	EXT.Preview.Font = font
 	EXT.Preview.DrawPass = true
 	EXT.Preview.Paint = function(this)
@@ -108,7 +123,7 @@ end
 
 EXT.RightClick = function(menu, name, path, dir)
 
-	if (!EXT.Preview) then return end
+	if (!EXT.Preview || !EXT.Preview.Font) then return end
 
 	menu:AddOption("Copy font name", function()
 		SetClipboardText(EXT.Preview.Font || "")
