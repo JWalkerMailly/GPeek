@@ -176,6 +176,8 @@ function PANEL:BuildAddonFileNode(parent, name, path, dir)
 
 	node.DoRightClick = function(this)
 
+		this:DoClick()
+
 		local menu = DermaMenu()
 
 		menu:AddOption("#spawnmenu.menu.copy", function()

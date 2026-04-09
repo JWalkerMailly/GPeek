@@ -20,7 +20,7 @@ EXT.Initialize = function(browser, name, path, dir)
 	EXT.CodeViewer = vgui.Create("DCodeViewer", EXT.Container)
 	EXT.CodeViewer:Dock(FILL)
 
-	browser:SetContent(EXT.Container, EXT)
+	browser:SetContent(EXT.Container)
 
 	return EXT.CodeViewer
 end
@@ -41,7 +41,7 @@ end
 EXT.RightClick = function(menu, name, path, dir)
 
 	menu:AddOption("Copy file contents", function()
-		SetClipboardText(EXT.Code)
+		SetClipboardText(EXT.Code || "")
 	end):SetIcon("icon16/page_paste.png")
 end
 
