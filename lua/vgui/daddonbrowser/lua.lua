@@ -29,17 +29,20 @@ EXT.Browse = function(browser, name, path, dir, code, lang)
 
 	EXT.FileName:SetText("/" .. dir .. "/" .. name)
 
-	code = code || file.Read(removeFirstFolder(dir .. "/" .. name), "LUA")
-	if (code == "") then
-		code = "This file is empty"
+	EXT.Code = code || file.Read(removeFirstFolder(dir .. "/" .. name), "LUA")
+	if (EXT.Code == "") then
+		EXT.Code = "This file is empty"
 		lang = "plaintext"
 	end
 
-	EXT.CodeViewer:SetContent(code, lang || "glua")
+	EXT.CodeViewer:SetContent(EXT.Code, lang || "glua")
 end
 
 EXT.RightClick = function(menu, name, path, dir)
-	-- override
+
+	menu:AddOption("Copy file contents", function()
+		SetClipboardText(EXT.Code)
+	end):SetIcon("icon16/page_paste.png")
 end
 
 EXT.Invalidate = function()

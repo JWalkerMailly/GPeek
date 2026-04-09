@@ -16,7 +16,7 @@ EXT.Browse = function(browser, name, path, dir)
 end
 
 EXT.RightClick = function(menu, name, path, dir)
-	-- override
+	lua.RightClick(menu, name, path, dir)
 end
 
 EXT.Invalidate = function()

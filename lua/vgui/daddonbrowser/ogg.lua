@@ -6,7 +6,7 @@ local EXT = {}
 EXT.Icon = "icon16/sound.png"
 
 EXT.Initialize = function(browser, name, path, dir)
-	-- override
+	wav.Initialize(browser, name, path, dir)
 end
 
 EXT.Browse = function(browser, name, path, dir)
@@ -14,7 +14,7 @@ EXT.Browse = function(browser, name, path, dir)
 end
 
 EXT.RightClick = function(menu, name, path, dir)
-	-- override
+	wav.RightClick(menu, name, path, dir)
 end
 
 EXT.Invalidate = function()
