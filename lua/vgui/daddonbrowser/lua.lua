@@ -30,7 +30,7 @@ EXT.Browse = function(browser, name, path, dir, code, lang)
 	EXT.FileName:SetText("/" .. dir .. "/" .. name)
 
 	EXT.Code = code || file.Read(removeFirstFolder(dir .. "/" .. name), "LUA")
-	if (EXT.Code == "") then
+	if (EXT.Code == nil || EXT.Code == "") then
 		EXT.Code = "This file is empty"
 		lang = "plaintext"
 	end
