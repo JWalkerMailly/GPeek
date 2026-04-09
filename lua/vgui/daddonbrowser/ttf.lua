@@ -16,13 +16,11 @@ nopqrstuvwxyz
 ]{}|;:'",.<>/?~
 ]]
 
-local fontRT  = GetRenderTarget("GPeekFontPreview", 1024, 1024)
+local fontRT  = GetRenderTarget("GPeekFontPreview", 1024, 512)
 local fontMat = CreateMaterial("GPeekFontPreview", "UnlitGeneric", {
 	["$basetexture"] = "GPeekFontPreview",
 	["$translucent"] = 1,
-	["$vertexcolor"] = 1,
-	["$minfilter"] = "linear",
-	["$magfilter"] = "linear"
+	["$vertexcolor"] = 1
 })
 
 local function fontDrawPass(context)
@@ -33,7 +31,7 @@ local function fontDrawPass(context)
 	cam.Start2D()
 
 		render.Clear(0, 0, 0, 0, true, true)
-		draw.DrawText(preview, "GPeek " .. context.Font, 0, 0, color_white)
+		draw.DrawText(preview, "GPeek " .. context.Font)
 
 	cam.End2D()
 	render.PopRenderTarget()
@@ -56,6 +54,11 @@ EXT.Initialize = function(browser, name, path, dir)
 	local controls = vgui.Create("DSizeToContents", EXT.Container)
 	controls:SetSizeX(false)
 	controls:Dock(TOP)
+	controls:DockMargin(0, 0, 0, 10)
+
+	EXT.FontName = vgui.Create("DLabel", controls)
+	EXT.FontName:Dock(TOP)
+	EXT.FontName:DockMargin(0, 0, 0, 5)
 
 	local fontScale = vgui.Create("DNumSlider", controls)
 	fontScale:SetText("Font Scale")
@@ -93,12 +96,13 @@ EXT.Browse = function(browser, name, path, dir)
 		FONTS[font] = true
 	end
 
+	EXT.FontName:SetText(font)
 	EXT.Preview.Font = font
 	EXT.Preview.DrawPass = true
 	EXT.Preview.Paint = function(this)
 		surface.SetMaterial(fontDrawPass(this))
 		surface.SetDrawColor(255, 255, 255, 255)
-		surface.DrawTexturedRect(0, 0, 1024 * this.FontScale, 1024 * this.FontScale)
+		surface.DrawTexturedRect(0, 0, 1024 * this.FontScale, 512 * this.FontScale)
 	end
 end
 
