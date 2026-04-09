@@ -2,13 +2,12 @@
 AddCSLuaFile()
 
 --- ttfname.lua
--- Reads the font name from a TTF/OTF file by parsing the OpenType 'name' table.
+-- Reads the font name from a TTF file by parsing the OpenType name table.
 -- Prioritizes English (Windows platform, UTF-16BE) with Mac platform as fallback.
--- Returns the full font name (nameID 4), falling back to family name (nameID 1).
-
+-- Returns the full font name; nameID 4, falling back to family name; nameID 1.
+-- https://learn.microsoft.com/en-us/typography/opentype/spec/name
 ttfname = {}
 
--- Read an unsigned 16-bit big-endian integer from a binary string at a given offset.
 local function readU16(data, offset)
 
 	local hi = string.byte(data, offset)
@@ -19,7 +18,6 @@ local function readU16(data, offset)
 	return hi * 256 + lo
 end
 
--- Read an unsigned 32-bit big-endian integer from a binary string at a given offset.
 local function readU32(data, offset)
 
 	local b1 = string.byte(data, offset)
@@ -34,6 +32,7 @@ end
 
 -- Decode a UTF-16BE encoded binary string into a plain ASCII/Latin string.
 -- Strips null bytes and keeps only printable characters.
+-- Also handles accented characters.
 local function decodeUTF16BE(data)
 
 	local chars = {}
@@ -64,7 +63,6 @@ local function decodeUTF16BE(data)
 	return table.concat(chars)
 end
 
--- Decode a Mac Roman / Latin-1 encoded string, stripping non-printable characters.
 local function decodeMacRoman(data)
 
 	local chars = {}
@@ -81,9 +79,9 @@ local function decodeMacRoman(data)
 	return table.concat(chars)
 end
 
--- Find the byte offset of the 'name' table within the TTF file data.
--- TTF offset table: sfVersion(4), numTables(2), searchRange(2), entrySelector(2), rangeShift(2)
--- Each table record: tag(4), checksum(4), offset(4), length(4)
+-- Find the bytes offset of the name table.
+-- TTF offset table: sfVersion, numTables, searchRange, entrySelector, rangeShift
+-- Each table record: tag, checksum, offset, length
 local function findNameTableOffset(data)
 
 	if (#data < 12) then return nil end
@@ -107,16 +105,10 @@ local function findNameTableOffset(data)
 end
 
 --- Read the font name from a TTF file's binary data.
--- Searches all name records, prioritizing:
---  1. Windows platform (3), Unicode BMP (1), English US (0x0409), nameID 4 (full name)
---  2. Windows platform (3), Unicode BMP (1), English US (0x0409), nameID 1 (family)
---  3. Windows platform (3), any language, nameID 4
---  4. Mac platform (1), Roman (0), English (0), nameID 4
---  5. Mac platform (1), Roman (0), English (0), nameID 1
---  6. Any platform, any language, nameID 4
---  7. Any platform, any language, nameID 1
+-- Searches all name records, prioritizing Windows platform
+-- Unicode BMP, English US, nameID 4
 -- @param data string Raw binary contents of the TTF file.
--- @return string|nil The font name, or nil if it could not be determined.
+-- @return string|nil The font name, or nil.
 function ttfname.readFromData(data)
 
 	if (!data || #data < 12) then return nil end
@@ -124,19 +116,18 @@ function ttfname.readFromData(data)
 	local nameOffset = findNameTableOffset(data)
 	if (!nameOffset) then return nil end
 
-	-- Name table header: format(2), count(2), stringOffset(2)
-	local nameBase    = nameOffset + 1  -- convert to 1-indexed
+	-- Name table header: format, count, stringOffset
+	local nameBase    = nameOffset + 1
 	local format      = readU16(data, nameBase)
 	local count       = readU16(data, nameBase + 2)
 	local strOffset   = readU16(data, nameBase + 4)
 
 	if (!format || !count || !strOffset) then return nil end
 
-	-- Base address of the string storage area
 	local storageBase = nameBase + strOffset
 
 	-- Parse all name records into a structured list.
-	-- Each record is 12 bytes: platformID(2), encodingID(2), languageID(2), nameID(2), length(2), offset(2)
+	-- Each record is 12 bytes: platformID, encodingID, languageID, nameID, length, offset
 	local records = {}
 	local recordBase = nameBase + 6
 	for i = 0, count - 1 do
@@ -161,7 +152,6 @@ function ttfname.readFromData(data)
 		end
 	end
 
-	-- Extract the string for a given record.
 	local function getString(record)
 
 		local start = storageBase + record.offset
@@ -169,17 +159,14 @@ function ttfname.readFromData(data)
 
 		if (#raw == 0) then return nil end
 
-		-- Windows platform strings are UTF-16BE
 		if (record.platformID == 3) then
 			return decodeUTF16BE(raw)
 		end
 
-		-- Mac platform strings are MacRoman
 		if (record.platformID == 1) then
 			return decodeMacRoman(raw)
 		end
 
-		-- Unicode platform (0) strings are also UTF-16BE
 		if (record.platformID == 0) then
 			return decodeUTF16BE(raw)
 		end
@@ -187,8 +174,7 @@ function ttfname.readFromData(data)
 		return nil
 	end
 
-	-- Candidate resolution: try each strategy in priority order.
-	-- Each strategy is a filter function that returns true if a record matches.
+	-- Candidate resolution, try each strategy in priority order.
 	local strategies = {
 		-- 1. Windows, Unicode BMP, English US, full name
 		function(r) return r.platformID == 3 && r.encodingID == 1 && r.languageID == 0x0409 && r.nameID == 4 end,
@@ -200,7 +186,7 @@ function ttfname.readFromData(data)
 		function(r) return r.platformID == 3 && r.nameID == 4 end,
 		-- 5. Mac, Roman, English, full name
 		function(r) return r.platformID == 1 && r.encodingID == 0 && r.languageID == 0 && r.nameID == 4 end,
-		-- 6. Mac, Roman, English, family name
+		-- 6. Mac, Roman, English, familly name
 		function(r) return r.platformID == 1 && r.encodingID == 0 && r.languageID == 0 && r.nameID == 1 end,
 		-- 7. Any platform, full name
 		function(r) return r.nameID == 4 end,
@@ -223,9 +209,8 @@ function ttfname.readFromData(data)
 end
 
 --- Read the font name directly from a TTF file path.
--- Uses GLua's file.Read to load the file from the given search path.
 -- @param filePath string Path to the TTF file.
--- @param searchPath string GLua search path (e.g. "GAME", "DATA"). Defaults to "GAME".
+-- @param searchPath string GLua search path.
 -- @return string|nil The font name, or nil on failure.
 function ttfname.readFromFile(filePath, searchPath)
 
