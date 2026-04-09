@@ -1,7 +1,7 @@
 
 local EXT = {}
 
-EXT.Icon = "icon16/script_palette.png"
+EXT.Icon = "icon16/image.png"
 
 local function removeFirstFolder(path)
 	return path:match("^[^/]+/(.+)$") || path

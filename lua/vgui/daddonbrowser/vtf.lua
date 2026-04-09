@@ -1,7 +1,7 @@
 
 local EXT = {}
 
-EXT.Icon = "icon16/image.png"
+EXT.Icon = "icon16/script_palette.png"
 
 EXT.Initialize = function(browser, name, path, dir)
 	-- override
