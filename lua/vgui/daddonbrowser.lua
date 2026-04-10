@@ -260,6 +260,6 @@ end
 
 vgui.Register("DAddonBrowser", PANEL, "EditablePanel")
 
-spawnmenu.AddCreationTab("GPeek", function()
+spawnmenu.AddCreationTab("gPeek", function()
 	return vgui.Create("DAddonBrowser")
 end, "icon16/gpeek.png", 999, "Browse addon content")

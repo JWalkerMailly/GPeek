@@ -16,9 +16,9 @@ nopqrstuvwxyz
 _+-=;:'",.<>/?~
 ]]
 
-local fontRT  = GetRenderTarget("GPeekFontPreview", 1024, 512)
-local fontMat = CreateMaterial("GPeekFontPreview", "UnlitGeneric", {
-	["$basetexture"] = "GPeekFontPreview",
+local fontRT  = GetRenderTarget("gPeekFontPreview", 1024, 512)
+local fontMat = CreateMaterial("gPeekFontPreview", "UnlitGeneric", {
+	["$basetexture"] = "gPeekFontPreview",
 	["$translucent"] = 1
 })
 
@@ -32,7 +32,7 @@ local function fontDrawPass(context)
 
 		if (context.Font) then
 
-			local font = "GPeek " .. context.Font
+			local font = "gPeek " .. context.Font
 
 			EXT.FontEntry:SetFont(font)
 			EXT.FontEntry:SetTall(draw.GetFontHeight(font))
@@ -89,7 +89,7 @@ EXT.Browse = function(filePath)
 	local font = ttfname.readFromFile(filePath)
 	if (font && !FONTS[font]) then
 
-		surface.CreateFont("GPeek " .. font, {
+		surface.CreateFont("gPeek " .. font, {
 			font = font,
 			size = 48
 		})

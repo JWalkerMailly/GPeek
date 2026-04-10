@@ -4,9 +4,9 @@ local FFT = {}
 
 EXT.Icon = "icon16/sound.png"
 
-local spectrumRT  = GetRenderTarget("GPeekSpectrumPreview", 256, 256)
-local spectrumMat = CreateMaterial("GPeekSpectrumPreview", "UnlitGeneric", {
-	["$basetexture"] = "GPeekSpectrumPreview",
+local spectrumRT  = GetRenderTarget("gPeekSpectrumPreview", 256, 256)
+local spectrumMat = CreateMaterial("gPeekSpectrumPreview", "UnlitGeneric", {
+	["$basetexture"] = "gPeekSpectrumPreview",
 	["$additive"]    = 1
 })
 
