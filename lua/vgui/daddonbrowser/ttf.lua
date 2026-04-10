@@ -56,11 +56,10 @@ EXT.Initialize = function()
 	local controls = vgui.Create("DSizeToContents", EXT.Container)
 	controls:SetSizeX(false)
 	controls:Dock(TOP)
-	controls:DockMargin(0, 0, 0, 5)
+	controls:DockMargin(5, 0, 5, 5)
 
 	EXT.FontName = vgui.Create("DLabel", controls)
 	EXT.FontName:Dock(TOP)
-	EXT.FontName:DockMargin(0, 0, 0, 0)
 	EXT.FontName:SetDark(true)
 
 	local fontScale = vgui.Create("DNumSlider", controls)
@@ -81,6 +80,7 @@ EXT.Initialize = function()
 
 	EXT.Preview = vgui.Create("DPanel", EXT.Container)
 	EXT.Preview:Dock(FILL)
+	EXT.Preview:DockMargin(5, 0, 5, 0)
 	EXT.Preview.FontScale = 1
 end
 

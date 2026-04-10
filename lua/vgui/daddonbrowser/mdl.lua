@@ -56,8 +56,9 @@ EXT.Initialize = function()
 	EXT.Scroll:Dock(TOP)
 
 	EXT.Controls = vgui.Create("DSizeToContents", EXT.Scroll)
-	EXT.Controls:SetSizeX(false)
 	EXT.Controls:Dock(TOP)
+	EXT.Controls:DockMargin(5, 0, 5, 0)
+	EXT.Controls:SetSizeX(false)
 
 	local container = vgui.Create("DPanel", EXT.Container)
 	container:Dock(FILL)
@@ -83,7 +84,7 @@ end
 
 EXT.Browse = function(filePath)
 
-	EXT.FileName:DockMargin(0, 0, 0, 0)
+	EXT.FileName:DockMargin(5, 0, 0, 0)
 
 	EXT.ModelViewer:SetModel(filePath)
 
