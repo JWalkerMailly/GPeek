@@ -77,7 +77,7 @@ function PANEL:LoadAddons(searchTerm)
 	self.ContentNavBar.Tree:Clear()
 
 	local addons = engine.GetAddons()
-	table.sort(addons, function(a, b) return a.title < b.title end)
+	table.sort(addons, function(a, b) return string.lower(a.title) < string.lower(b.title) end)
 
 	for k,v in ipairs(addons) do
 

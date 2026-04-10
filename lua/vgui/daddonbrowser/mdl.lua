@@ -60,9 +60,11 @@ end
 EXT.Browse = function(filePath)
 
 	EXT.ModelViewer:SetModel(filePath)
+
 	local model  = EXT.ModelViewer:GetEntity()
 	local pos    = model:GetPos()
 	local camera = PositionSpawnIcon(model, pos, true)
+
 	if (camera) then
 		EXT.ModelViewer:SetCamPos(camera.origin)
 		EXT.ModelViewer:SetFOV(camera.fov)
