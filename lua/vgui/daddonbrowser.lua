@@ -111,17 +111,17 @@ function PANEL:BuildAddonNodeAsync(path, dir, parent, cancellationToken)
 		self:BatchProcessAddonDataAsync(cancellationToken, files,   self.BuildAddonFileNode,   parent, dir)
 	end)
 
-	local function step()
+	local function processNode()
 
 		if (cancellationToken.Cancelled) then return end
 		if (coroutine.status(co) == "dead") then return end
 		if (!IsValid(self)) then return end
 
 		coroutine.resume(co)
-		timer.Simple(0, step)
+		timer.Simple(0, processNode)
 	end
 
-	step()
+	processNode()
 end
 
 --- Batch Process Addon Data Async
@@ -137,10 +137,20 @@ end
 -- @param path string The addon path or search path root used for file lookups.
 function PANEL:BatchProcessAddonDataAsync(cancellationToken, data, processor, parent, dir, path)
 
+	local batchSize = 10
+	local count = 0
+
 	for k,v in ipairs(data) do
+
 		if (cancellationToken.Cancelled) then return end
+
 		processor(self, parent, dir, v, path, dir && (dir .. "/" .. v) || v)
-		coroutine.yield()
+		count = count + 1
+
+		if (count >= batchSize) then
+			count = 0
+			coroutine.yield()
+		end
 	end
 end
 
@@ -293,4 +303,4 @@ vgui.Register("DAddonBrowser", PANEL, "EditablePanel")
 
 spawnmenu.AddCreationTab("gPeek", function()
 	return vgui.Create("DAddonBrowser")
-end, "icon16/gpeek.png", 999, "Browse addon content")
+end, "icon16/gpeek.png", 999, "Browsing the inner machinations")
