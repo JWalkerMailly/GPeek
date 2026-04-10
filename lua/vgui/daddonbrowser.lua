@@ -5,9 +5,13 @@ PANEL.Extensions = {
 	-- fallback
 	["error"] = {
 		Icon       = "icon16/page_white.png",
-		Initialize = function() end,
+		Initialize = function(container)
+			local msg = vgui.Create("DLabel", container)
+			msg:Dock(TOP)
+			msg:SetText("Filetype not currently supported.")
+		end,
 		Browse     = function() end,
-		RightClick = function() end,
+		RightClick = function()	end,
 		Invalidate = function() end
 	}
 }
@@ -213,7 +217,7 @@ function PANEL:OpenAddonFile(extension, filePath)
 		base.FileName:Dock(TOP)
 		base.FileName:DockMargin(0, 0, 0, 5)
 
-		extension.Initialize(filePath)
+		extension.Initialize(base.Container)
 		self:SetContent(base.Container)
 	end
 
@@ -254,6 +258,6 @@ end
 
 vgui.Register("DAddonBrowser", PANEL, "EditablePanel")
 
-spawnmenu.AddCreationTab("#spawnmenu.category.addons", function()
+spawnmenu.AddCreationTab("GPeek", function()
 	return vgui.Create("DAddonBrowser")
-end, "icon16/package.png", 999, "")
+end, "icon16/gpeek.png", 999, "Browse addon content")

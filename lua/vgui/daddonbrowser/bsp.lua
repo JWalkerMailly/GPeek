@@ -1,10 +1,11 @@
 
 local EXT = {}
 
+EXT.Base = "error"
 EXT.Icon = "icon16/map_edit.png"
 
-EXT.Initialize = function()
-	-- override
+EXT.Initialize = function(container)
+	EXT.Base.Initialize(container)
 end
 
 EXT.Browse = function(filePath)
