@@ -52,10 +52,6 @@ end
 
 EXT.Initialize = function()
 
-	EXT.FileName = vgui.Create("DLabel", EXT.Container)
-	EXT.FileName:Dock(TOP)
-	EXT.FileName:DockMargin(0, 0, 0, 5)
-
 	local stop = vgui.Create("DButton", EXT.Container)
 	stop:Dock(TOP)
 	stop:SetText("Stop")
@@ -65,7 +61,6 @@ EXT.Initialize = function()
 end
 
 EXT.Browse = function(filePath)
-	EXT.FileName:SetText("/" .. filePath)
 	sound.PlayFile(filePath, "noblock", spectrum)
 end
 

@@ -9,10 +9,6 @@ end
 
 EXT.Initialize = function()
 
-	EXT.FileName = vgui.Create("DLabel", EXT.Container)
-	EXT.FileName:Dock(TOP)
-	EXT.FileName:DockMargin(0, 0, 0, 5)
-
 	EXT.Tabs = vgui.Create("DPropertySheet", EXT.Container)
 	EXT.Tabs:Dock(FILL)
 
@@ -78,8 +74,6 @@ EXT.Initialize = function()
 end
 
 EXT.Browse = function(filePath, hideMat)
-
-	EXT.FileName:SetText("/" .. filePath)
 
 	local image = removeFirstFolder(filePath)
 

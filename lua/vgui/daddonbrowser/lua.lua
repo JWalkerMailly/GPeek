@@ -8,18 +8,11 @@ local function removeFirstFolder(path)
 end
 
 EXT.Initialize = function()
-
-	EXT.FileName = vgui.Create("DLabel", EXT.Container)
-	EXT.FileName:Dock(TOP)
-	EXT.FileName:DockMargin(0, 0, 0, 5)
-
 	EXT.CodeViewer = vgui.Create("DCodeViewer", EXT.Container)
 	EXT.CodeViewer:Dock(FILL)
 end
 
 EXT.Browse = function(filePath, code, lang)
-
-	EXT.FileName:SetText("/" .. filePath)
 
 	EXT.Code = code || file.Read(removeFirstFolder(filePath), "LUA")
 	if (EXT.Code == nil || EXT.Code == "") then

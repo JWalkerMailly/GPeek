@@ -1,7 +1,7 @@
 
 local EXT = {}
 
-EXT.Base = "vmt"
+EXT.Base = "vmt" -- resolved at runtime
 EXT.Icon = "icon16/image.png"
 
 EXT.Initialize = function()

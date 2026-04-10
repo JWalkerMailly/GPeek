@@ -1,9 +1,9 @@
 
 local PANEL = {}
-local EXTENSIONS = {
+PANEL.Extensions = {
 
 	-- fallback
-	["default"] = {
+	["error"] = {
 		Icon       = "icon16/page_white.png",
 		Initialize = function() end,
 		Browse     = function() end,
@@ -12,23 +12,23 @@ local EXTENSIONS = {
 	}
 }
 
-for k,v in pairs(file.Find("vgui/daddonbrowser/*", "LUA")) do
-
-	local extension = include("vgui/daddonbrowser/" .. v)
-	local extensionName = v:match("(.+)%..+$")
-
-	EXTENSIONS[extensionName] = extension
-end
-
-for k,v in pairs(EXTENSIONS) do
-	if (!v.Base) then continue end
-	v.Base = EXTENSIONS[v.Base]
-end
-
 --- Component Initialization
 -- Initializes the DAddonBrowser panel, creating the horizontal divider layout
 -- and sidebar navigation, then loading all mounted addons into the tree.
 function PANEL:Init()
+
+	for k,v in pairs(file.Find("vgui/daddonbrowser/*", "LUA")) do
+
+		local extension = include("vgui/daddonbrowser/" .. v)
+		local extensionName = v:match("(.+)%..+$")
+
+		self.Extensions[extensionName] = extension
+	end
+
+	for k,v in pairs(self.Extensions) do
+		if (!v.Base) then continue end
+		v.Base = self.Extensions[v.Base]
+	end
 
 	self.HorizontalDivider = vgui.Create("DHorizontalDivider", self)
 	self.HorizontalDivider:Dock(FILL)
@@ -172,7 +172,7 @@ end
 function PANEL:BuildAddonFileNode(parent, dir, name)
 
 	-- fetch file extension plugin for addon browser content.
-	local extension = EXTENSIONS[string.GetExtensionFromFilename(name)] || EXTENSIONS["default"]
+	local extension = self.Extensions[string.GetExtensionFromFilename(name)] || self.Extensions["error"]
 	local node = parent:AddNode(name, extension.Icon)
 
 	node.DoClick = function(this)
@@ -206,11 +206,18 @@ function PANEL:OpenAddonFile(extension, filePath)
 	local base = extension.Base || extension
 
 	if (!IsValid(base.Container)) then
+
 		base.Container = vgui.Create("DPanel")
+
+		base.FileName = vgui.Create("DLabel", base.Container)
+		base.FileName:Dock(TOP)
+		base.FileName:DockMargin(0, 0, 0, 5)
+
 		extension.Initialize(filePath)
 		self:SetContent(base.Container)
 	end
 
+	base.FileName:SetText(filePath)
 	extension.Browse(filePath)
 end
 
@@ -240,7 +247,7 @@ end
 -- Calls the Invalidate callback on every registered extension handler,
 -- allowing extensions to clean up or reset any active state or UI they own.
 function PANEL:InvalidateExtensions()
-	for k,v in pairs(EXTENSIONS) do
+	for k,v in pairs(self.Extensions) do
 		v.Invalidate()
 	end
 end

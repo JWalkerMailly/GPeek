@@ -45,10 +45,6 @@ end
 
 EXT.Initialize = function()
 
-	EXT.FileName = vgui.Create("DLabel", EXT.Container)
-	EXT.FileName:Dock(TOP)
-	EXT.FileName:DockMargin(0, 0, 0, 5)
-
 	local scroll = vgui.Create("DScrollPanel", EXT.Container)
 	scroll:Dock(TOP)
 	scroll:SetTall(95)
@@ -62,8 +58,6 @@ EXT.Initialize = function()
 end
 
 EXT.Browse = function(filePath)
-
-	EXT.FileName:SetText("/" .. filePath)
 
 	EXT.ModelViewer:SetModel(filePath)
 	local model  = EXT.ModelViewer:GetEntity()

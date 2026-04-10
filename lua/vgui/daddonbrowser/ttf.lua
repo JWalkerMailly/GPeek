@@ -54,10 +54,6 @@ end
 
 EXT.Initialize = function()
 
-	EXT.FileName = vgui.Create("DLabel", EXT.Container)
-	EXT.FileName:Dock(TOP)
-	EXT.FileName:DockMargin(0, 0, 0, 5)
-
 	local controls = vgui.Create("DSizeToContents", EXT.Container)
 	controls:SetSizeX(false)
 	controls:Dock(TOP)
@@ -89,8 +85,6 @@ EXT.Initialize = function()
 end
 
 EXT.Browse = function(filePath)
-
-	EXT.FileName:SetText("/" .. filePath)
 
 	local font = ttfname.readFromFile(filePath)
 	if (font && !FONTS[font]) then

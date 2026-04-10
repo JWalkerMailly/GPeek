@@ -1,7 +1,7 @@
 
 local EXT = {}
 
-EXT.Base = "lua"
+EXT.Base = "lua" -- resolved at runtime
 EXT.Icon = "icon16/page_white_excel.png"
 
 EXT.Initialize = function()
