@@ -85,6 +85,7 @@ EXT.Browse = function(filePath, hideMat)
 		EXT.Tabs:GetItems()[2].Tab:SetVisible(false)
 	else
 		EXT.Tabs:GetItems()[2].Tab:SetVisible(true)
+		EXT.Tabs:InvalidateChildren()
 	end
 
 	local vmt = file.Read(filePath, "GAME")

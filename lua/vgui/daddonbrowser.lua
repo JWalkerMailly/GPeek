@@ -9,6 +9,7 @@ PANEL.Extensions = {
 			local msg = vgui.Create("DLabel", container)
 			msg:Dock(TOP)
 			msg:SetText("Filetype not currently supported.")
+			msg:SetDark(true)
 		end,
 		Browse     = function() end,
 		RightClick = function()	end,
@@ -216,6 +217,7 @@ function PANEL:OpenAddonFile(extension, filePath)
 		base.FileName = vgui.Create("DLabel", base.Container)
 		base.FileName:Dock(TOP)
 		base.FileName:DockMargin(0, 0, 0, 5)
+		base.FileName:SetDark(true)
 
 		extension.Initialize(base.Container)
 		self:SetContent(base.Container)
