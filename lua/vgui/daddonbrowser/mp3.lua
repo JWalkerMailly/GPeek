@@ -1,24 +1,23 @@
 
-local wav = include("wav.lua")
-
 local EXT = {}
 
+EXT.Base = "wav"
 EXT.Icon = "icon16/sound.png"
 
-EXT.Initialize = function(browser, name, path, dir)
-	wav.Initialize(browser, name, path, dir)
+EXT.Initialize = function()
+	EXT.Base.Initialize()
 end
 
-EXT.Browse = function(browser, name, path, dir)
-	wav.Browse(browser, name, path, dir)
+EXT.Browse = function(filePath)
+	EXT.Base.Browse(filePath)
 end
 
-EXT.RightClick = function(menu, name, path, dir)
-	wav.RightClick(menu, name, path, dir)
+EXT.RightClick = function(menu, filePath)
+	EXT.Base.RightClick(menu, filePath)
 end
 
 EXT.Invalidate = function()
-	wav.Invalidate()
+	EXT.Base.Invalidate()
 end
 
 return EXT

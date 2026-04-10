@@ -7,11 +7,7 @@ local function removeFirstFolder(path)
 	return path:match("^[^/]+/(.+)$") || path
 end
 
-EXT.Initialize = function(browser, name, path, dir)
-
-	if (IsValid(EXT.Container)) then return end
-
-	EXT.Container = vgui.Create("DPanel")
+EXT.Initialize = function()
 
 	EXT.FileName = vgui.Create("DLabel", EXT.Container)
 	EXT.FileName:Dock(TOP)
@@ -36,7 +32,10 @@ EXT.Initialize = function(browser, name, path, dir)
 		EXT.Image.Scale = val
 	end
 
-	EXT.Image = vgui.Create("DImageButton", textureTab)
+	local imageContainer = vgui.Create("DPanel", textureTab)
+	imageContainer:Dock(FILL)
+
+	EXT.Image = vgui.Create("DImageButton", imageContainer)
 	EXT.Image:Dock(FILL)
 	EXT.Image.Scale = 1
 
@@ -53,6 +52,7 @@ EXT.Initialize = function(browser, name, path, dir)
 		local fh = math.min(th, th * scale) * this.Scale
 
 		this:SetSize(fw, fh)
+		this:Center()
 
 		for k,v in pairs(this:GetChildren()) do
 			v:SetSize(fw, fh)
@@ -75,17 +75,13 @@ EXT.Initialize = function(browser, name, path, dir)
 
 	EXT.CodeViewer = vgui.Create("DCodeViewer", materialTab)
 	EXT.CodeViewer:Dock(FILL)
-
-	browser:SetContent(EXT.Container)
-
-	return EXT.Image
 end
 
-EXT.Browse = function(browser, name, path, dir, hideMat)
+EXT.Browse = function(filePath, hideMat)
 
-	EXT.FileName:SetText("/" .. dir .. "/" .. name)
+	EXT.FileName:SetText("/" .. filePath)
 
-	local image = removeFirstFolder(dir .. "/" .. name)
+	local image = removeFirstFolder(filePath)
 
 	EXT.Image.Material = Material(image)
 	EXT.Image:SetImage(image)
@@ -97,11 +93,11 @@ EXT.Browse = function(browser, name, path, dir, hideMat)
 		EXT.Tabs:GetItems()[2].Tab:SetVisible(true)
 	end
 
-	local vmt = file.Read(dir .. "/" .. name, "GAME")
+	local vmt = file.Read(filePath, "GAME")
 	EXT.CodeViewer:SetContent(vmt, "json")
 end
 
-EXT.RightClick = function(menu, name, path, dir)
+EXT.RightClick = function(menu, filePath)
 	-- override
 end
 

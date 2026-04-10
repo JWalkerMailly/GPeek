@@ -50,11 +50,7 @@ local function spectrum(channel)
 	end
 end
 
-EXT.Initialize = function(browser, name, path, dir)
-
-	if (IsValid(EXT.Container)) then return end
-
-	EXT.Container = vgui.Create("DPanel")
+EXT.Initialize = function()
 
 	EXT.FileName = vgui.Create("DLabel", EXT.Container)
 	EXT.FileName:Dock(TOP)
@@ -66,16 +62,14 @@ EXT.Initialize = function(browser, name, path, dir)
 	stop.DoClick = function()
 		EXT.Invalidate()
 	end
-
-	browser:SetContent(EXT.Container)
 end
 
-EXT.Browse = function(browser, name, path, dir)
-	EXT.FileName:SetText("/" .. dir .. "/" .. name)
-	sound.PlayFile(dir .. "/" .. name, "noblock", spectrum)
+EXT.Browse = function(filePath)
+	EXT.FileName:SetText("/" .. filePath)
+	sound.PlayFile(filePath, "noblock", spectrum)
 end
 
-EXT.RightClick = function(menu, name, path, dir)
+EXT.RightClick = function(menu, filePath)
 	-- override
 end
 

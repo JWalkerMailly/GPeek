@@ -3,33 +3,7 @@ local EXT = {}
 
 EXT.Icon = "icon16/brick.png"
 
-EXT.Initialize = function(browser, name, path, dir)
-
-	if (IsValid(EXT.Container)) then return end
-
-	EXT.Container = vgui.Create("DPanel")
-
-	EXT.FileName = vgui.Create("DLabel", EXT.Container)
-	EXT.FileName:Dock(TOP)
-	EXT.FileName:DockMargin(0, 0, 0, 5)
-
-	local scroll = vgui.Create("DScrollPanel", EXT.Container)
-	scroll:Dock(TOP)
-	scroll:SetTall(95)
-
-	EXT.Controls = vgui.Create("DSizeToContents", scroll)
-	EXT.Controls:SetSizeX(false)
-	EXT.Controls:Dock(TOP)
-
-	EXT.ModelViewer = vgui.Create("DAdjustableModelPanel", EXT.Container)
-	EXT.ModelViewer:Dock(FILL)
-
-	browser:SetContent(EXT.Container)
-
-	return EXT.ModelViewer
-end
-
-local function BuildControls(model, modelInfo)
+local function buildControls(model, modelInfo)
 
 	EXT.Controls:Clear()
 
@@ -69,13 +43,31 @@ local function BuildControls(model, modelInfo)
 	EXT.Controls:InvalidateLayout(true)
 end
 
-EXT.Browse = function(browser, name, path, dir)
+EXT.Initialize = function()
 
-	EXT.FileName:SetText("/" .. dir .. "/" .. name)
+	EXT.FileName = vgui.Create("DLabel", EXT.Container)
+	EXT.FileName:Dock(TOP)
+	EXT.FileName:DockMargin(0, 0, 0, 5)
 
-	EXT.ModelViewer:SetModel(dir .. "/" .. name)
-	local model = EXT.ModelViewer:GetEntity()
-	local pos = model:GetPos()
+	local scroll = vgui.Create("DScrollPanel", EXT.Container)
+	scroll:Dock(TOP)
+	scroll:SetTall(95)
+
+	EXT.Controls = vgui.Create("DSizeToContents", scroll)
+	EXT.Controls:SetSizeX(false)
+	EXT.Controls:Dock(TOP)
+
+	EXT.ModelViewer = vgui.Create("DAdjustableModelPanel", EXT.Container)
+	EXT.ModelViewer:Dock(FILL)
+end
+
+EXT.Browse = function(filePath)
+
+	EXT.FileName:SetText("/" .. filePath)
+
+	EXT.ModelViewer:SetModel(filePath)
+	local model  = EXT.ModelViewer:GetEntity()
+	local pos    = model:GetPos()
 	local camera = PositionSpawnIcon(model, pos, true)
 	if (camera) then
 		EXT.ModelViewer:SetCamPos(camera.origin)
@@ -83,18 +75,18 @@ EXT.Browse = function(browser, name, path, dir)
 		EXT.ModelViewer:SetLookAng(camera.angles)
 	end
 
-	local modelInfo = util.GetModelInfo(dir .. "/" .. name)
+	local modelInfo = util.GetModelInfo(filePath)
 	if (!modelInfo) then return end
 
-	BuildControls(model, modelInfo)
+	buildControls(model, modelInfo)
 end
 
-EXT.RightClick = function(menu, name, path, dir)
+EXT.RightClick = function(menu, filePath)
 
 	menu:AddOption("#spawnmenu.menu.spawn_with_toolgun", function()
 		RunConsoleCommand("gmod_tool", "creator")
 		RunConsoleCommand("creator_type", "4")
-		RunConsoleCommand("creator_name", dir .. "/" .. name)
+		RunConsoleCommand("creator_name", filePath)
 	end):SetIcon("icon16/brick_add.png")
 end
 

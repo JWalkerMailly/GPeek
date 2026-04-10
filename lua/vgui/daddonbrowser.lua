@@ -20,6 +20,11 @@ for k,v in pairs(file.Find("vgui/daddonbrowser/*", "LUA")) do
 	EXTENSIONS[extensionName] = extension
 end
 
+for k,v in pairs(EXTENSIONS) do
+	if (!v.Base) then continue end
+	v.Base = EXTENSIONS[v.Base]
+end
+
 --- Component Initialization
 -- Initializes the DAddonBrowser panel, creating the horizontal divider layout
 -- and sidebar navigation, then loading all mounted addons into the tree.
@@ -80,7 +85,7 @@ function PANEL:LoadAddons(searchTerm)
 			continue
 		end
 
-		self:BuildAddonFolderNode(self.ContentNavBar.Tree, v.title, v.title, nil, v.mounted, v.wsid)
+		self:BuildAddonFolderNode(self.ContentNavBar.Tree, v.title, nil, v.title, v.mounted, v.wsid)
 	end
 
 	self:SetContent()
@@ -88,21 +93,21 @@ end
 
 --- Build Addon Node
 -- Recursively builds the file and folder nodes for a given addon directory.
--- @param name panel The parent tree node to attach children to.
 -- @param path string The addon path or search path root used for file lookups.
 -- @param dir string|nil The current subdirectory being scanned, or nil for the root.
-function PANEL:BuildAddonNode(name, path, dir)
+-- @param name panel The parent tree node to attach children to.
+function PANEL:BuildAddonNode(path, dir, name)
 
 	local files, folders = file.Find(dir && (dir .. "/*") || "*", path)
 
 	-- recurse addon folders.
 	for k,v in ipairs(folders) do
-		self:BuildAddonFolderNode(name, v, path, dir && (dir .. "/" .. v) || v)
+		self:BuildAddonFolderNode(name, path, dir && (dir .. "/" .. v) || v, v)
 	end
 
 	-- build file node bindings.
 	for k,v in ipairs(files) do
-		self:BuildAddonFileNode(name, v, path, dir)
+		self:BuildAddonFileNode(name, dir, v)
 	end
 end
 
@@ -111,12 +116,12 @@ end
 -- first expand and disposed on collapse to conserve memory. Provides a right-click
 -- menu to copy the directory path to the clipboard.
 -- @param parent panel The parent tree or node to attach this folder node to.
--- @param name string The display label for the folder node.
 -- @param path string The addon path or search path root used for file lookups.
 -- @param dir string|nil The subdirectory this node represents, or nil for the root.
+-- @param name string The display label for the folder node.
 -- @param mounted boolean|nil Whether the addon is mounted; unmounted addons show a warning icon.
 -- @param wsid string Workshop id.
-function PANEL:BuildAddonFolderNode(parent, name, path, dir, mounted, wsid)
+function PANEL:BuildAddonFolderNode(parent, path, dir, name, mounted, wsid)
 
 	local node = parent:AddNode(name, (mounted == false) && "icon16/folder_delete.png" || nil)
 	node:SetDoubleClickToOpen(false)
@@ -132,7 +137,7 @@ function PANEL:BuildAddonFolderNode(parent, name, path, dir, mounted, wsid)
 			end
 		else
 			if (!this.Built) then
-				self:BuildAddonNode(this, path, dir)
+				self:BuildAddonNode(path, dir, this)
 			end
 		end
 
@@ -162,19 +167,16 @@ end
 -- handler for icon display and content browsing. Provides a right-click menu
 -- to copy the full file path to the clipboard.
 -- @param parent panel The parent tree node to attach this file node to.
--- @param name string The filename including extension.
--- @param path string The addon path or search path root used for file lookups.
 -- @param dir string The subdirectory containing this file.
-function PANEL:BuildAddonFileNode(parent, name, path, dir)
+-- @param name string The filename including extension.
+function PANEL:BuildAddonFileNode(parent, dir, name)
 
 	-- fetch file extension plugin for addon browser content.
 	local extension = EXTENSIONS[string.GetExtensionFromFilename(name)] || EXTENSIONS["default"]
 	local node = parent:AddNode(name, extension.Icon)
 
 	node.DoClick = function(this)
-		self:InvalidateExtensions()
-		extension.Initialize(self, name, path, dir)
-		extension.Browse(self, name, path, dir)
+		self:OpenAddonFile(extension, dir .. "/" .. name)
 	end
 
 	node.DoRightClick = function(this)
@@ -187,10 +189,29 @@ function PANEL:BuildAddonFileNode(parent, name, path, dir)
 			SetClipboardText(dir .. "/" .. name)
 		end):SetIcon("icon16/page_copy.png")
 
-		extension.RightClick(menu, name, path, dir)
+		extension.RightClick(menu, dir .. "/" .. name)
 
 		menu:Open()
 	end
+end
+
+--- Open Addon File Contents
+-- Lazily build the extension's UI singleton context to display file data.
+-- @param extension obj The extension object representing the file.
+-- @param filePath string Full file path.
+function PANEL:OpenAddonFile(extension, filePath)
+
+	self:InvalidateExtensions()
+
+	local base = extension.Base || extension
+
+	if (!IsValid(base.Container)) then
+		base.Container = vgui.Create("DPanel")
+		extension.Initialize(filePath)
+		self:SetContent(base.Container)
+	end
+
+	extension.Browse(filePath)
 end
 
 --- Content Loader

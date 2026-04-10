@@ -3,15 +3,15 @@ local EXT = {}
 
 EXT.Icon = "icon16/map_go.png"
 
-EXT.Initialize = function(browser, name, path, dir)
+EXT.Initialize = function()
 	-- override
 end
 
-EXT.Browse = function(browser, name, path, dir)
+EXT.Browse = function(filePath)
 	-- override
 end
 
-EXT.RightClick = function(menu, name, path, dir)
+EXT.RightClick = function(menu, filePath)
 	-- override
 end
 

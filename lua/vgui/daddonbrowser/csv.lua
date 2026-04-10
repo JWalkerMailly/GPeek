@@ -1,26 +1,24 @@
 
--- passthrough
-local lua = include("lua.lua")
-
 local EXT = {}
 
+EXT.Base = "lua"
 EXT.Icon = "icon16/page_white_excel.png"
 
-EXT.Initialize = function(browser, name, path, dir)
-	lua.Initialize(browser, name, path, dir)
+EXT.Initialize = function()
+	EXT.Base.Initialize()
 end
 
-EXT.Browse = function(browser, name, path, dir)
-	local code = file.Read(dir .. "/" .. name, "GAME")
-	lua.Browse(browser, name, path, dir, code, "csv")
+EXT.Browse = function(filePath)
+	local code = file.Read(filePath, "GAME")
+	EXT.Base.Browse(filePath, code, "csv")
 end
 
-EXT.RightClick = function(menu, name, path, dir)
-	lua.RightClick(menu, name, path, dir)
+EXT.RightClick = function(menu, filePath)
+	EXT.Base.RightClick(menu, filePath)
 end
 
 EXT.Invalidate = function()
-	lua.Invalidate()
+	EXT.Base.Invalidate()
 end
 
 return EXT
