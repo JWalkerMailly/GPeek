@@ -11,7 +11,7 @@ EXT.Initialize = function(browser, name, path, dir)
 end
 
 EXT.Browse = function(browser, name, path, dir)
-	vmt.Browse(browser, name, path, dir)
+	vmt.Browse(browser, name, path, dir, true)
 end
 
 EXT.RightClick = function(menu, name, path, dir)
