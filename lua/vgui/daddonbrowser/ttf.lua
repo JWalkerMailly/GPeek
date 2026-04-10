@@ -101,9 +101,16 @@ EXT.Browse = function(filePath)
 	EXT.Preview.Font = font
 	EXT.Preview.DrawPass = true
 	EXT.Preview.Paint = function(this)
+
+		render.PushFilterMin(TEXFILTER.ANISOTROPIC)
+		render.PushFilterMag(TEXFILTER.ANISOTROPIC)
+
 		surface.SetDrawColor(255, 255, 255, 255)
 		surface.SetMaterial(fontDrawPass(this))
 		surface.DrawTexturedRect(0, 0, 1024 * this.FontScale, 512 * this.FontScale)
+
+		render.PopFilterMin()
+		render.PopFilterMag()
 	end
 end
 

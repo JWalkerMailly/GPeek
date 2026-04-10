@@ -23,13 +23,17 @@ EXT.Initialize = function()
 	txtScale:SetDark(true)
 	txtScale:SizeToContents()
 	txtScale:Dock(TOP)
-	txtScale:DockMargin(0, 0, 0, 10)
+	txtScale:DockMargin(5, 0, 0, 5)
 	txtScale.OnValueChanged = function(this, val)
 		EXT.Image.Scale = val
 	end
 
 	local imageContainer = vgui.Create("DPanel", textureTab)
 	imageContainer:Dock(FILL)
+	imageContainer.Paint = function(this)
+		surface.SetDrawColor(EXT.Background:GetChecked() && color_white || color_black)
+		this:DrawFilledRect()
+	end
 
 	EXT.Image = vgui.Create("DImageButton", imageContainer)
 	EXT.Image:Dock(FILL)
@@ -64,6 +68,17 @@ EXT.Initialize = function()
 		end):SetIcon("icon16/page_copy.png")
 
 		menu:Open()
+	end
+
+	EXT.Background = vgui.Create("DCheckBoxLabel", imageContainer)
+	EXT.Background:Dock(BOTTOM)
+	EXT.Background:DockMargin(5, 0, 0, 5)
+	EXT.Background:SetText("Invert background")
+	EXT.Background:SetValue(false)
+	EXT.Background:SetDark(false)
+	EXT.Background.OnChange = function(this, val)
+		this:SetDark(val)
+		this:InvalidateChildren()
 	end
 
 	local materialTab = vgui.Create("DPanel")

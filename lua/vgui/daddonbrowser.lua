@@ -213,6 +213,7 @@ function PANEL:OpenAddonFile(extension, filePath)
 	if (!IsValid(base.Container)) then
 
 		base.Container = vgui.Create("DPanel")
+		base.Container:DockPadding(5, 0, 5, 5)
 
 		base.FileName = vgui.Create("DLabel", base.Container)
 		base.FileName:Dock(TOP)
