@@ -7,6 +7,7 @@ local function buildControls(model, modelInfo)
 
 	EXT.Controls:Clear()
 
+	local height = 5
 	if (modelInfo.SkinCount > 1) then
 
 		local skins = vgui.Create("DNumSlider", EXT.Controls)
@@ -20,6 +21,8 @@ local function buildControls(model, modelInfo)
 		skins.OnValueChanged = function(this, val)
 			model:SetSkin(math.Round(val))
 		end
+
+		height = height + 30
 	end
 
 	for i = 0, model:GetNumBodyGroups() - 1 do
@@ -38,26 +41,49 @@ local function buildControls(model, modelInfo)
 		bodygroups.OnValueChanged = function(this, val)
 			model:SetBodygroup(i, math.Round(val))
 		end
+
+		height = height + 30
 	end
 
 	EXT.Controls:InvalidateLayout(true)
+	EXT.Scroll:SetTall(math.Clamp(height, 0, 95))
+	EXT.Scroll:PerformLayout()
 end
 
 EXT.Initialize = function()
 
-	local scroll = vgui.Create("DScrollPanel", EXT.Container)
-	scroll:Dock(TOP)
-	scroll:SetTall(95)
+	EXT.Scroll = vgui.Create("DScrollPanel", EXT.Container)
+	EXT.Scroll:Dock(TOP)
 
-	EXT.Controls = vgui.Create("DSizeToContents", scroll)
+	EXT.Controls = vgui.Create("DSizeToContents", EXT.Scroll)
 	EXT.Controls:SetSizeX(false)
 	EXT.Controls:Dock(TOP)
 
-	EXT.ModelViewer = vgui.Create("DAdjustableModelPanel", EXT.Container)
+	local container = vgui.Create("DPanel", EXT.Container)
+	container:Dock(FILL)
+	container.Paint = function(this)
+		surface.SetDrawColor(EXT.Background:GetChecked() && color_white || color_black)
+		this:DrawFilledRect()
+	end
+
+	EXT.ModelViewer = vgui.Create("DAdjustableModelPanel", container)
 	EXT.ModelViewer:Dock(FILL)
+
+	EXT.Background = vgui.Create("DCheckBoxLabel", EXT.ModelViewer)
+	EXT.Background:Dock(BOTTOM)
+	EXT.Background:DockMargin(5, 0, 0, 5)
+	EXT.Background:SetText("Invert background")
+	EXT.Background:SetValue(false)
+	EXT.Background:SetDark(false)
+	EXT.Background.OnChange = function(this, val)
+		this:SetDark(val)
+		this:InvalidateChildren()
+	end
 end
 
 EXT.Browse = function(filePath)
+
+	EXT.FileName:DockMargin(0, 0, 0, 0)
 
 	EXT.ModelViewer:SetModel(filePath)
 
@@ -74,6 +100,7 @@ EXT.Browse = function(filePath)
 	local modelInfo = util.GetModelInfo(filePath)
 	if (!modelInfo) then return end
 
+	EXT.Scroll:SetTall(0)
 	buildControls(model, modelInfo)
 end
 
