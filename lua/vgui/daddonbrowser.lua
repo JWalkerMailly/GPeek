@@ -223,7 +223,7 @@ function PANEL:OpenAddonFile(extension, filePath)
 		self:SetContent(base.Container)
 	end
 
-	base.FileName:SetText(filePath)
+	base.FileName:SetText("/" .. filePath)
 	extension.Browse(filePath)
 end
 
