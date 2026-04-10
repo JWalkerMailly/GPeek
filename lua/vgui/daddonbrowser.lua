@@ -91,29 +91,56 @@ function PANEL:LoadAddons(searchTerm)
 			continue
 		end
 
-		self:BuildAddonFolderNode(self.ContentNavBar.Tree, v.title, nil, v.title, v.mounted, v.wsid)
+		self:BuildAddonFolderNode(self.ContentNavBar.Tree, nil, v.title, v.title, nil, v.mounted, v.wsid)
 	end
 
 	self:SetContent()
 end
 
---- Build Addon Node
+--- Build Addon Node Async
 -- Recursively builds the file and folder nodes for a given addon directory.
 -- @param path string The addon path or search path root used for file lookups.
--- @param dir string|nil The current subdirectory being scanned, or nil for the root.
--- @param name panel The parent tree node to attach children to.
-function PANEL:BuildAddonNode(path, dir, name)
+-- @param dir string The current subdirectory being scanned, or nil for the root.
+-- @param parent panel The parent tree node to attach children to.
+function PANEL:BuildAddonNodeAsync(path, dir, parent, cancellationToken)
 
 	local files, folders = file.Find(dir && (dir .. "/*") || "*", path)
 
-	-- recurse addon folders.
-	for k,v in ipairs(folders) do
-		self:BuildAddonFolderNode(name, path, dir && (dir .. "/" .. v) || v, v)
+	local co = coroutine.create(function()
+		self:BatchProcessAddonDataAsync(cancellationToken, folders, self.BuildAddonFolderNode, parent, dir, path)
+		self:BatchProcessAddonDataAsync(cancellationToken, files,   self.BuildAddonFileNode,   parent, dir)
+	end)
+
+	local function step()
+
+		if (cancellationToken.Cancelled) then return end
+		if (coroutine.status(co) == "dead") then return end
+		if (!IsValid(self)) then return end
+
+		coroutine.resume(co)
+		timer.Simple(0, step)
 	end
 
-	-- build file node bindings.
-	for k,v in ipairs(files) do
-		self:BuildAddonFileNode(name, dir, v)
+	step()
+end
+
+--- Batch Process Addon Data Async
+-- Iterates over a dataset and dispatches each entry to a processor function,
+-- yielding after every item to avoid blocking the game thread. Respects a
+-- cancellation token to abort mid-iteration if the owning node is collapsed
+-- or the panel is invalidated.
+-- @param cancellationToken table A table with a Cancelled boolean field.
+-- @param data table Sequential array of items to process (files or folders).
+-- @param processor function The handler to invoke for each item.
+-- @param parent panel The parent tree node to attach built nodes to.
+-- @param dir string The current subdirectory being scanned, or nil for root.
+-- @param path string The addon path or search path root used for file lookups.
+function PANEL:BatchProcessAddonDataAsync(cancellationToken, data, processor, parent, dir, path)
+
+	for k,v in ipairs(data) do
+		if (cancellationToken.Cancelled) then return end
+		processor(self, parent, dir, v, path, dir && (dir .. "/" .. v) || v)
+		coroutine.yield()
 	end
 end
 
@@ -122,19 +149,22 @@ end
 -- first expand and disposed on collapse to conserve memory. Provides a right-click
 -- menu to copy the directory path to the clipboard.
 -- @param parent panel The parent tree or node to attach this folder node to.
--- @param path string The addon path or search path root used for file lookups.
--- @param dir string|nil The subdirectory this node represents, or nil for the root.
+-- @param dir string The subdirectory this node represents, or nil for the root.
 -- @param name string The display label for the folder node.
--- @param mounted boolean|nil Whether the addon is mounted; unmounted addons show a warning icon.
+-- @param path string The addon path or search path root used for file lookups.
+-- @param resolvedPath string The addon full to file.
+-- @param mounted boolean Whether the addon is mounted; unmounted addons show a warning icon.
 -- @param wsid string Workshop id.
-function PANEL:BuildAddonFolderNode(parent, path, dir, name, mounted, wsid)
+function PANEL:BuildAddonFolderNode(parent, dir, name, path, resolvedPath, mounted, wsid)
 
 	local node = parent:AddNode(name, (mounted == false) && "icon16/folder_delete.png" || nil)
 	node:SetDoubleClickToOpen(false)
 
+	node.CancellationToken = { Cancelled = false }
 	node.DoClick = function(this)
 
 		local wasExpanded = this:GetExpanded()
+		this.CancellationToken.Cancelled = wasExpanded
 
 		-- dispose of child nodes when collapsing to save on memory.
 		if (wasExpanded) then
@@ -143,7 +173,7 @@ function PANEL:BuildAddonFolderNode(parent, path, dir, name, mounted, wsid)
 			end
 		else
 			if (!this.Built) then
-				self:BuildAddonNode(path, dir, this)
+				self:BuildAddonNodeAsync(path, resolvedPath, this, this.CancellationToken)
 			end
 		end
 
@@ -161,7 +191,7 @@ function PANEL:BuildAddonFolderNode(parent, path, dir, name, mounted, wsid)
 		end
 
 		menu:AddOption("#spawnmenu.menu.copy", function()
-			SetClipboardText(dir || path)
+			SetClipboardText(resolvedPath || path)
 		end):SetIcon("icon16/page_copy.png")
 
 		menu:Open()

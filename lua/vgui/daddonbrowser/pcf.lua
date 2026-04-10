@@ -37,6 +37,8 @@ EXT.Browse = function(filePath)
 	end
 
 	EXT.Layout:Clear()
+
+	if (!PEPlus_ProcessedPCFs[filePath]) then return end
 	for k,v in pairs(PEPlus_ProcessedPCFs[filePath]) do
 		spawnmenu.CreateContentIcon("peplus", EXT.Layout, { pcf = filePath, name = k })
 	end

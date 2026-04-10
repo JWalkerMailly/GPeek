@@ -37,6 +37,7 @@ EXT.Initialize = function()
 
 	EXT.Image = vgui.Create("DImageButton", imageContainer)
 	EXT.Image:Dock(FILL)
+	EXT.Image:Center()
 	EXT.Image.Scale = 1
 
 	EXT.Image.PerformLayout = function(this, w, h)
