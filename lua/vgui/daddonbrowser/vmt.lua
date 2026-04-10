@@ -1,7 +1,7 @@
 
 local EXT = {}
 
-EXT.Icon = "icon16/image.png"
+EXT.Icon = "icon16/script_palette.png"
 
 local function removeFirstFolder(path)
 	return path:match("^[^/]+/(.+)$") || path
@@ -17,8 +17,28 @@ EXT.Initialize = function(browser, name, path, dir)
 	EXT.FileName:Dock(TOP)
 	EXT.FileName:DockMargin(0, 0, 0, 5)
 
-	EXT.Image = vgui.Create("DImageButton", EXT.Container)
+	EXT.Tabs = vgui.Create("DPropertySheet", EXT.Container)
+	EXT.Tabs:Dock(FILL)
+
+	local textureTab = vgui.Create("DPanel")
+	EXT.Tabs:AddSheet("Texture", textureTab, "icon16/image.png")
+
+	local txtScale = vgui.Create("DNumSlider", textureTab)
+	txtScale:SetText("Scale")
+	txtScale:SetMinMax(1, 20)
+	txtScale:SetDecimals(0)
+	txtScale:SetValue(1)
+	txtScale:SetDark(true)
+	txtScale:SizeToContents()
+	txtScale:Dock(TOP)
+	txtScale:DockMargin(0, 0, 0, 10)
+	txtScale.OnValueChanged = function(this, val)
+		EXT.Image.Scale = val
+	end
+
+	EXT.Image = vgui.Create("DImageButton", textureTab)
 	EXT.Image:Dock(FILL)
+	EXT.Image.Scale = 1
 
 	EXT.Image.PerformLayout = function(this, w, h)
 
@@ -29,8 +49,8 @@ EXT.Initialize = function(browser, name, path, dir)
 		if (tw == 0 || th == 0) then return end
 
 		local scale = math.min(w / tw, h / th)
-		local fw = math.min(tw, tw * scale)
-		local fh = math.min(th, th * scale)
+		local fw = math.min(tw, tw * scale) * this.Scale
+		local fh = math.min(th, th * scale) * this.Scale
 
 		this:SetSize(fw, fh)
 
@@ -50,12 +70,18 @@ EXT.Initialize = function(browser, name, path, dir)
 		menu:Open()
 	end
 
+	local materialTab = vgui.Create("DPanel")
+	EXT.Tabs:AddSheet("Material", materialTab, "icon16/palette.png")
+
+	EXT.CodeViewer = vgui.Create("DCodeViewer", materialTab)
+	EXT.CodeViewer:Dock(FILL)
+
 	browser:SetContent(EXT.Container)
 
 	return EXT.Image
 end
 
-EXT.Browse = function(browser, name, path, dir)
+EXT.Browse = function(browser, name, path, dir, hideMat)
 
 	EXT.FileName:SetText("/" .. dir .. "/" .. name)
 
@@ -63,6 +89,16 @@ EXT.Browse = function(browser, name, path, dir)
 
 	EXT.Image.Material = Material(image)
 	EXT.Image:SetImage(image)
+
+	if (hideMat) then
+		EXT.Tabs:SetActiveTab(EXT.Tabs:GetItems()[1].Tab)
+		EXT.Tabs:GetItems()[2].Tab:SetVisible(false)
+	else
+		EXT.Tabs:GetItems()[2].Tab:SetVisible(true)
+	end
+
+	local vmt = file.Read(dir .. "/" .. name, "GAME")
+	EXT.CodeViewer:SetContent(vmt, "json")
 end
 
 EXT.RightClick = function(menu, name, path, dir)

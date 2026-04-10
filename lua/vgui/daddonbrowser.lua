@@ -59,6 +59,9 @@ function PANEL:CreateSearchBar()
 	searchButton:DockMargin(4, 2, 4, 2)
 	searchButton:SetSize(16, 16)
 	searchButton:SetTooltip("#spawnmenu.press_search")
+	searchButton.DoClick = function (this)
+		self.Search:OnEnter(self.Search:GetText())
+	end
 end
 
 --- Load Addons
