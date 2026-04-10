@@ -8,6 +8,7 @@ PANEL.Extensions = {
 		Initialize = function(container)
 			local msg = vgui.Create("DLabel", container)
 			msg:Dock(TOP)
+			msg:DockMargin(5, 0, 5, 0)
 			msg:SetText("Filetype not currently supported.")
 			msg:SetDark(true)
 		end,
