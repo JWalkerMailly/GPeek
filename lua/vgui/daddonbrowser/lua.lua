@@ -22,7 +22,7 @@ EXT.Browse = function(filePath, code, lang)
 
 	EXT.Code = code || file.Read(removeFirstFolder(filePath), "LUA")
 	if (EXT.Code == nil || EXT.Code == "") then
-		EXT.Code = "This file is empty"
+		EXT.Code = language.GetPhrase("gpeek.extensions.lua.empty")
 		lang = "plaintext"
 	end
 
@@ -31,7 +31,7 @@ end
 
 EXT.RightClick = function(menu, filePath)
 
-	menu:AddOption("Copy file contents", function()
+	menu:AddOption("#gpeek.extensions.lua.copy", function()
 		SetClipboardText(EXT.Code || "")
 	end):SetIcon("icon16/page_paste.png")
 end

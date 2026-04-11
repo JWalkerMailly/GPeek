@@ -80,7 +80,7 @@ EXT.Initialize = function()
 	EXT.FontName:SetDark(true)
 
 	local fontScale = vgui.Create("DNumSlider", controls)
-	fontScale:SetText("Font Scale")
+	fontScale:SetText("#gpeek.extensions.ttf.fontscale")
 	fontScale:SetMinMax(0.4, 1.6)
 	fontScale:SetValue(1)
 	fontScale:SetDark(true)
@@ -114,7 +114,7 @@ EXT.Browse = function(filePath)
 		FONTS[font] = true
 	end
 
-	EXT.FontName:SetText(font || "Could not load font.")
+	EXT.FontName:SetText(font || "#gpeek.extensions.ttf.error")
 	EXT.Preview.Font = font
 	EXT.Preview.DrawPass = true
 	EXT.Preview.Paint = function(this)
@@ -135,7 +135,7 @@ EXT.RightClick = function(menu, filePath)
 
 	if (!EXT.Preview || !EXT.Preview.Font) then return end
 
-	menu:AddOption("Copy font name", function()
+	menu:AddOption("#gpeek.extensions.ttf.copy", function()
 		SetClipboardText(EXT.Preview.Font || "")
 	end):SetIcon("icon16/font.png")
 end

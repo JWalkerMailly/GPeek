@@ -33,10 +33,10 @@ EXT.Initialize = function()
 	EXT.Tabs:Dock(FILL)
 
 	local textureTab = vgui.Create("DPanel")
-	EXT.Tabs:AddSheet("Texture", textureTab, "icon16/image.png")
+	EXT.Tabs:AddSheet("#gpeek.extensions.vmt.texture", textureTab, "icon16/image.png")
 
 	local txtScale = vgui.Create("DNumSlider", textureTab)
-	txtScale:SetText("Scale")
+	txtScale:SetText("#gpeek.extensions.vmt.scale")
 	txtScale:SetMinMax(1, 20)
 	txtScale:SetDecimals(0)
 	txtScale:SetValue(1)
@@ -83,7 +83,7 @@ EXT.Initialize = function()
 
 		local menu = DermaMenu()
 
-		menu:AddOption("Copy to clipboard", function()
+		menu:AddOption("#spawnmenu.menu.copy", function()
 			SetClipboardText(this:GetImage())
 		end):SetIcon("icon16/page_copy.png")
 
@@ -93,7 +93,7 @@ EXT.Initialize = function()
 	EXT.Background = vgui.Create("DCheckBoxLabel", imageContainer)
 	EXT.Background:Dock(BOTTOM)
 	EXT.Background:DockMargin(5, 0, 0, 5)
-	EXT.Background:SetText("Invert background")
+	EXT.Background:SetText("#gpeek.extensions.vmt.invert")
 	EXT.Background:SetValue(false)
 	EXT.Background:SetDark(false)
 	EXT.Background.OnChange = function(this, val)
@@ -102,7 +102,7 @@ EXT.Initialize = function()
 	end
 
 	local materialTab = vgui.Create("DPanel")
-	EXT.Tabs:AddSheet("Material", materialTab, "icon16/palette.png")
+	EXT.Tabs:AddSheet("#gpeek.extensions.vmt.material", materialTab, "icon16/palette.png")
 
 	EXT.CodeViewer = vgui.Create("DCodeViewer", materialTab)
 	EXT.CodeViewer:Dock(FILL)

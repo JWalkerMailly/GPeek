@@ -69,7 +69,7 @@ EXT.Initialize = function()
 
 	local stop = vgui.Create("DButton", EXT.Container)
 	stop:Dock(TOP)
-	stop:SetText("Stop")
+	stop:SetText("#gpeek.extensions.wav.stop")
 	stop.DoClick = function()
 		EXT.Invalidate()
 	end

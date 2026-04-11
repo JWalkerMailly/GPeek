@@ -9,7 +9,7 @@ PANEL.Extensions = {
 			local msg = vgui.Create("DLabel", container)
 			msg:Dock(TOP)
 			msg:DockMargin(5, 0, 5, 0)
-			msg:SetText("Filetype not currently supported.")
+			msg:SetText("#gpeek.extensions.error.message")
 			msg:SetDark(true)
 		end,
 		Browse     = function() end,
@@ -342,4 +342,4 @@ vgui.Register("DAddonBrowser", PANEL, "EditablePanel")
 
 spawnmenu.AddCreationTab("gPeek", function()
 	return vgui.Create("DAddonBrowser")
-end, "icon16/gpeek.png", 999, "Browsing the inner machinations")
+end, "icon16/gpeek.png", 999, "#gpeek.spawnmenu.daddonbrowser.tooltip")
