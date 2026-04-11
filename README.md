@@ -75,7 +75,7 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 | Type | Description |
 |------|------------|
 | Code Viewer | Syntax-highlighted file display |
-| Model Viewer | 3D model preview with bodygroup/skin controls |
+| Model Viewer | 3D model preview with animation/bodygroup/skin controls |
 | Font Viewer | RenderTarget-based font preview system |
 | Material Viewer | Texture/material inspection with preview |
 | Audio Viewer | FFT spectrum visualizer with real-time rendering |
