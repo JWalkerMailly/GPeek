@@ -3,6 +3,8 @@
   gPeek
 </h1>
 
+*Browsing the inner machinations*
+
 A modular Garry’s Mod addon inspection and file browsing framework built around a plugin-based UI system. gPeek provides a unified interface for browsing installed addons, inspecting files, and rendering content through extensible viewers (code, models, fonts, materials, audio, and particles).
 
 <div>
