@@ -137,7 +137,7 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 
 | Extension | Viewer | Description |
 |----------|--------|-------------|
-| `.pcf` | Particle Browser | Particle system inspector (requires Particle Effects+) |
+| `.pcf` | Particle Browser | Particle system inspector (requires [Particle Effects+](https://steamcommunity.com/sharedfiles/filedetails/?id=3684885115)) |
 
 <div>
   <img src="./readme/particles.png">
