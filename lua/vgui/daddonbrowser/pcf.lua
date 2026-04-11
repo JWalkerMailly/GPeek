@@ -3,44 +3,9 @@ local EXT = {}
 
 EXT.Icon = "icon16/fire.png"
 
-local PEPlusSupport = nil
-
-local function detectPEPlusSupport()
-
-	if PEPlusSupport != nil then return PEPlusSupport end
-
-	local ent = Entity(0)
-	local fx = CreateParticleSystem(ent, "gpeek_particle_test", PATTACH_ABSORIGIN)
-
-	if (!fx) then return end
-
-	local set = type(fx.SetShouldSimulate) == "function"
-	local get = type(fx.GetShouldSimulate) == "function"
-	PEPlusSupport = set && get
-
-	fx:StopEmission(false, true)
-end
-
 EXT.Initialize = function()
 
-	if (!PEPlus_ProcessedPCFs) then return end
-
-	detectPEPlusSupport()
-
-	EXT.Scroll = vgui.Create("DScrollPanel", EXT.Container)
-	EXT.Scroll:Dock(FILL)
-
-	EXT.Layout = vgui.Create("DIconLayout", EXT.Scroll)
-	EXT.Layout:Dock(FILL)
-	EXT.Layout:SetSpaceX(2.5)
-	EXT.Layout:SetSpaceY(2.5)
-end
-
-EXT.Browse = function(filePath)
-
 	if (!PEPlus_ProcessedPCFs) then
-
-		EXT.Container:Clear()
 
 		local msg = vgui.Create("DLabel", EXT.Container)
 		msg:Dock(TOP)
@@ -58,22 +23,23 @@ EXT.Browse = function(filePath)
 		return
 	end
 
-	if (!PEPlusSupport) then
+	EXT.Scroll = vgui.Create("DScrollPanel", EXT.Container)
+	EXT.Scroll:Dock(FILL)
 
-		EXT.Container:Clear()
+	EXT.Layout = vgui.Create("DIconLayout", EXT.Scroll)
+	EXT.Layout:Dock(FILL)
+	EXT.Layout:SetSpaceX(2.5)
+	EXT.Layout:SetSpaceY(2.5)
+end
 
-		local msg = vgui.Create("DLabel", EXT.Container)
-		msg:Dock(TOP)
-		msg:DockMargin(5, 0, 5, 5)
-		msg:SetText("'Particle Effects+' (3684885115) is currently not supported for this branch: " .. BRANCH .. ".")
-		msg:SetDark(true)
+EXT.Browse = function(filePath)
 
-		return
-	end
+	if (!PEPlus_ProcessedPCFs) then return end
 
 	EXT.Layout:Clear()
 
 	if (!PEPlus_ProcessedPCFs[filePath]) then return end
+
 	for k,v in pairs(PEPlus_ProcessedPCFs[filePath]) do
 		spawnmenu.CreateContentIcon("peplus", EXT.Layout, { pcf = filePath, name = k })
 	end
