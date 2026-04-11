@@ -6,9 +6,7 @@ DPanel (EXT.Container)
 │           │
 │           ├── DNumSlider (Skin)
 │           │
-│           ├── DNumSlider (Bodygroups)
-│           │
-│           └── Layout sizing system
+│           └── DNumSlider (Bodygroups)
 │
 └── DPanel (container)
       ├── Paint:
@@ -46,7 +44,7 @@ local function buildControls(model, modelInfo)
 	local animations = vgui.Create("DComboBox", EXT.Controls)
 	animations:Dock(TOP)
 	animations:DockMargin(0, 0, 0, 5)
-	animations:SetValue("Animation...")
+	animations:SetValue("select animation...")
 
 	for k,v in pairs(sequences) do
 		animations:AddChoice(v)
