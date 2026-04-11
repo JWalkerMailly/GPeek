@@ -18,7 +18,7 @@ PANEL.Extensions = {
 	}
 }
 
---- Component Initialization
+--- Component initialization
 -- Initializes the DAddonBrowser panel, creating the horizontal divider layout
 -- and sidebar navigation, then loading all mounted addons into the tree.
 function PANEL:Init()
@@ -75,7 +75,7 @@ function PANEL:CreateSearchBar()
 	end
 end
 
---- Load Addons
+--- Load addons
 -- Clears and repopulates the navigation tree with all currently installed addons,
 -- sorted alphabetically by title. Unmounted addons are visually flagged.
 function PANEL:LoadAddons(searchTerm)
@@ -97,7 +97,7 @@ function PANEL:LoadAddons(searchTerm)
 	self:SetContent()
 end
 
---- Build Addon Node Async
+--- Build addon tree node
 -- Recursively builds the file and folder nodes for a given addon directory.
 -- @param path string The addon path or search path root used for file lookups.
 -- @param dir string The current subdirectory being scanned, or nil for the root.
@@ -126,7 +126,7 @@ function PANEL:BuildAddonNodeAsync(path, dir, parent, cancellationToken)
 	processNode()
 end
 
---- Batch Process Addon Data Async
+--- Batch addon data processing
 -- Iterates over a dataset and dispatches each entry to a processor function,
 -- yielding after every item to avoid blocking the game thread. Respects a
 -- cancellation token to abort mid-iteration if the owning node is collapsed
@@ -156,7 +156,7 @@ function PANEL:BatchProcessAddonDataAsync(cancellationToken, data, processor, pa
 	end
 end
 
---- Addon Folder Node Builder
+--- Build addon folder node
 -- Creates a collapsible folder node in the tree. Children are built lazily on
 -- first expand and disposed on collapse to conserve memory. Provides a right-click
 -- menu to copy the directory path to the clipboard.
@@ -180,6 +180,12 @@ function PANEL:BuildAddonFolderNode(parent, dir, name, path, resolvedPath, mount
 
 		-- dispose of child nodes when collapsing to save on memory.
 		if (wasExpanded) then
+
+			-- free reference if change tracking was on us.
+			if (self.CurrentAddon == this) then
+				self.CurrentAddon = nil
+			end
+
 			for k,v in pairs(this:GetChildNodes()) do
 				v:Remove()
 			end
@@ -190,6 +196,7 @@ function PANEL:BuildAddonFolderNode(parent, dir, name, path, resolvedPath, mount
 		end
 
 		this.Built = !wasExpanded
+		self:HandleAddonRootCollapse(parent, this)
 	end
 
 	node.DoRightClick = function(this)
@@ -210,7 +217,39 @@ function PANEL:BuildAddonFolderNode(parent, dir, name, path, resolvedPath, mount
 	end
 end
 
---- Addon File Node Builder
+--- Collapse addon roots
+-- Relies on the 'gpeek_multi_addon' convar to determine if multi-addon browsing
+-- is enabled. If disabled (default), only one root node can be expanded at
+-- any given time in the viewer to save on memory.
+-- @param parent panel The current node's parent.
+-- @param node panel The node currently being expanded.
+function PANEL:HandleAddonRootCollapse(parent, node)
+
+	if (parent != self.ContentNavBar.Tree) then return end
+	if (GetConVar("gpeek_multi_addon"):GetBool()) then return end
+
+	local currentAddon = self.CurrentAddon
+
+	if (!IsValid(currentAddon)) then
+		self.CurrentAddon = node
+		return
+	end
+
+	if (currentAddon != node) then
+
+		-- dispatch cancellation to previous root.
+		currentAddon.CancellationToken.Cancelled = true
+
+		for k,v in pairs(currentAddon:GetChildNodes()) do
+			v:Remove()
+		end
+
+		currentAddon.Built = false
+		self.CurrentAddon = node
+	end
+end
+
+--- Build addon file node
 -- Creates a file leaf in the tree, resolved to its appropriate extension
 -- handler for icon display and content browsing. Provides a right-click menu
 -- to copy the full file path to the clipboard.
@@ -243,7 +282,7 @@ function PANEL:BuildAddonFileNode(parent, dir, name)
 	end
 end
 
---- Open Addon File Contents
+--- Open and display file contents
 -- Lazily build the extension's UI singleton context to display file data.
 -- @param extension obj The extension object representing the file.
 -- @param filePath string Full file path.
@@ -270,7 +309,7 @@ function PANEL:OpenAddonFile(extension, filePath)
 	extension.Browse(filePath)
 end
 
---- Content Loader
+--- Load content into viewer
 -- Replaces the right-hand content panel of the divider with the provided panel.
 -- The previous content panel is fully removed to free memory.
 -- @param content panel The new content panel to display on the right side.
