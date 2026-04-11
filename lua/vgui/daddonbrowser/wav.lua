@@ -1,3 +1,18 @@
+--[[
+DPanel (EXT.Container)
+├── DButton (Stop)
+│     - Stops currently playing audio channel
+│
+└── Paint (EXT.Container overridden by spectrum(channel))
+      ├── FFT Processing
+      │     - EXT.Channel (FFT_256)
+      │
+      ├── RenderTarget (spectrumRT 256x256)
+      │
+      ├── Post Processing
+      │
+      └── Material Pass (spectrumMat)
+]]
 
 local EXT = {}
 local FFT = {}

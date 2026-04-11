@@ -1,3 +1,20 @@
+--[[
+DPanel (EXT.Container)
+└── DSizeToContents (controls)
+     ├── DLabel (EXT.FontName)
+     │     - Displays loaded font name or error message
+     │
+     ├── DNumSlider (Font Scale)
+     │     - Controls EXT.Preview.FontScale (0.4 - 1.6)
+     │
+     ├── DTextEntry (EXT.FontEntry)
+     │     - Sample text used for font preview rendering
+     │
+     └── DPanel (EXT.Preview)
+           - Paint:
+               - Renders font preview via RenderTarget (fontRT)
+               - Uses fontDrawPass() for material generation
+]]
 
 require("ttfname")
 

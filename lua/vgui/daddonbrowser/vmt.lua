@@ -1,3 +1,23 @@
+--[[
+DPanel (EXT.Container)
+└── DPropertySheet (EXT.Tabs)
+     ├── Texture Tab (DPanel)
+     │     ├── DNumSlider (Scale)
+     │     │
+     │     ├── DPanel (imageContainer)
+     │     │     ├── Paint:
+     │     │     │     - Background color toggle (white/black via EXT.Background)
+     │     │     │
+     │     │     └── DImageButton (EXT.Image)
+     │     │           - Displays material texture
+     │     │
+     │     └── DCheckBoxLabel (EXT.Background)
+     │           - Toggles background inversion
+     │
+     └── Material Tab (DPanel)
+           └── DCodeViewer (EXT.CodeViewer)
+                 - Displays VMT/material file contents
+]]
 
 local EXT = {}
 

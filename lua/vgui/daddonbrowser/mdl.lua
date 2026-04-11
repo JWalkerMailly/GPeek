@@ -1,3 +1,25 @@
+--[[
+DPanel (EXT.Container)
+├── DScrollPanel (EXT.Scroll)
+│     └── DSizeToContents (EXT.Controls)
+│           ├── DNumSlider (Skin)
+│           │
+│           ├── DNumSlider (Bodygroups)
+│           │
+│           └── Layout sizing system
+│
+└── DPanel (container)
+      ├── Paint:
+      │     - Background color toggle (white/black via EXT.Background)
+      │
+      └── DAdjustableModelPanel (EXT.ModelViewer)
+            ├── Displays model from filePath
+            │
+            ├── Camera configuration
+            │
+            └── DCheckBoxLabel (EXT.Background)
+                  - Toggles background inversion
+]]
 
 local EXT = {}
 

@@ -1,3 +1,14 @@
+--[[
+DPanel (EXT.Container)
+├── DLabel (warning message) [if PEPlus_ProcessedPCFs missing]
+│
+├── DButton (See in Workshop) [if PEPlus_ProcessedPCFs missing]
+│     - Opens Particle Effects+ workshop page
+│
+└── DScrollPanel (EXT.Scroll) [if PEPlus_ProcessedPCFs exists]
+      └── DIconLayout (EXT.Layout)
+            - Grid layout for particle entries
+]]
 
 local EXT = {}
 

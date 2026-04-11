@@ -1,3 +1,9 @@
+--[[
+DPanel (EXT.Container)
+└── DCodeViewer (EXT.CodeViewer)
+     - Displays file contents
+     - Syntax highlighting via lang (default: glua)
+]]
 
 local EXT = {}
 
