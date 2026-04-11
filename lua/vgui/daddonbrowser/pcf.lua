@@ -3,9 +3,29 @@ local EXT = {}
 
 EXT.Icon = "icon16/fire.png"
 
+local PEPlusSupport = nil
+
+local function detectPEPlusSupport()
+
+	if PEPlusSupport != nil then return PEPlusSupport end
+
+	local ent = Entity(0)
+	local fx = CreateParticleSystem(ent, "gpeek_particle_test", PATTACH_ABSORIGIN)
+
+	if (!fx) then return end
+
+	local set = type(fx.SetShouldSimulate) == "function"
+	local get = type(fx.GetShouldSimulate) == "function"
+	PEPlusSupport = set && get
+
+	fx:StopEmission(false, true)
+end
+
 EXT.Initialize = function()
 
 	if (!PEPlus_ProcessedPCFs) then return end
+
+	detectPEPlusSupport()
 
 	EXT.Scroll = vgui.Create("DScrollPanel", EXT.Container)
 	EXT.Scroll:Dock(FILL)
@@ -20,6 +40,8 @@ EXT.Browse = function(filePath)
 
 	if (!PEPlus_ProcessedPCFs) then
 
+		EXT.Container:Clear()
+
 		local msg = vgui.Create("DLabel", EXT.Container)
 		msg:Dock(TOP)
 		msg:DockMargin(5, 0, 5, 5)
@@ -32,6 +54,19 @@ EXT.Browse = function(filePath)
 		workshop.DoClick = function()
 			steamworks.ViewFile("3684885115")
 		end
+
+		return
+	end
+
+	if (!PEPlusSupport) then
+
+		EXT.Container:Clear()
+
+		local msg = vgui.Create("DLabel", EXT.Container)
+		msg:Dock(TOP)
+		msg:DockMargin(5, 0, 5, 5)
+		msg:SetText("'Particle Effects+' (3684885115) is currently not supported for this branch: " .. BRANCH .. ".")
+		msg:SetDark(true)
 
 		return
 	end
