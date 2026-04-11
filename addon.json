@@ -1,0 +1,14 @@
+{
+	"title"  : "gPeek - Addon Content Browser",
+	"type"   : "Tool",
+	"tags"   : [ "fun", "build" ],
+	"ignore" :
+	[
+		"*.git*",
+		"*.gitignore*",
+		"*addon.txt*",
+		"*readme*",
+		"LICENSE",
+		"README.md"
+	]
+}
