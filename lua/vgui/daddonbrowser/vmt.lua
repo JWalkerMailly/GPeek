@@ -37,7 +37,6 @@ EXT.Initialize = function()
 
 	EXT.Image = vgui.Create("DImageButton", imageContainer)
 	EXT.Image:Dock(FILL)
-	EXT.Image:Center()
 	EXT.Image.Scale = 1
 
 	EXT.Image.PerformLayout = function(this, w, h)
@@ -92,9 +91,12 @@ end
 EXT.Browse = function(filePath, hideMat)
 
 	local image = removeFirstFolder(filePath)
-
 	EXT.Image.Material = Material(image)
-	EXT.Image:SetImage(image)
+
+	-- unfortunately, the only reliable way of fixing VGUI's FOUC.
+	timer.Simple(0, function()
+		if (IsValid(EXT.Image)) then EXT.Image:SetImage(image) end
+	end)
 
 	if (hideMat) then
 		EXT.Tabs:SetActiveTab(EXT.Tabs:GetItems()[1].Tab)
