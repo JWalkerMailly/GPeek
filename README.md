@@ -8,7 +8,7 @@
 A modular Garry’s Mod addon inspection and file browsing framework built around a plugin-based UI system. gPeek provides a unified interface for browsing installed addons, inspecting files, and rendering content through extensible viewers (code, models, fonts, materials, audio, and particles).
 
 <div>
-  <img src="./preview.png">
+  <img src="./readme/preview.png">
 </div>
 <br>
 
@@ -85,6 +85,10 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 | `.properties` | Code Viewer | Key/value configuration inspection |
 | `.csv` | Code Viewer | Tabular data display (raw format view) |
 
+<div>
+  <img src="./readme/code.png">
+</div>
+
 ### 🎨 Image & Texture Formats
 
 | Extension | Viewer | Description |
@@ -93,11 +97,19 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 | `.jpg` / `.jpeg` | Material Viewer | Image preview renderer |
 | `.vmt` | Material Viewer | Valve Material Type inspector + source view |
 
+<div>
+  <img src="./readme/vmt.png">
+</div>
+
 ### 🎮 Model Format
 
 | Extension | Viewer | Description |
 |----------|--------|-------------|
 | `.mdl` | Model Viewer | 3D model preview with skin + bodygroup controls |
+
+<div>
+  <img src="./readme/mdl.png">
+</div>
 
 ### 🔊 Audio Formats
 
@@ -107,17 +119,29 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 | `.ogg` | Audio Visualizer | Audio playback + spectrum analysis |
 | `.wav` | Audio Visualizer | Audio playback + spectrum rendering |
 
+<div>
+  <img src="./readme/wav.png">
+</div>
+
 ### 🔤 Font Format
 
 | Extension | Viewer | Description |
 |----------|--------|-------------|
 | `.ttf` | Font Viewer | RenderTarget-based font preview system |
 
+<div>
+  <img src="./readme/ttf.png">
+</div>
+
 ### 💥 Particle Format
 
 | Extension | Viewer | Description |
 |----------|--------|-------------|
 | `.pcf` | Particle Browser | Particle system inspector (requires Particle Effects+) |
+
+<div>
+  <img src="./readme/particles.png">
+</div>
 
 <br>
 
