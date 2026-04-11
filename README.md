@@ -15,6 +15,9 @@ A modular Garry’s Mod addon inspection and file browsing framework built aroun
 > [!NOTE]
 > The code viewer can be found here: [DCodeViewer](https://github.com/JWalkerMailly/DCodeViewer)
 
+> [!NOTE]
+> Artificial intelligence (AI), specifically Claude, was used to translate the “properties” file into 31 other languages supported by GMod.
+
 <br>
 
 ## ⚙️ Core Concepts
