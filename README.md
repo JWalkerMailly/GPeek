@@ -11,6 +11,10 @@ A modular Garry’s Mod addon inspection and file browsing framework built aroun
   <img src="./readme/preview.png">
   <sup><a href="https://github.com/JWalkerMailly/Derma-Github-Theme"><em>Derma-Github-Theme</em></a></sup>
 </div>
+
+> [!NOTE]
+> The code viewer can be found here: [DCodeViewer](https://github.com/JWalkerMailly/DCodeViewer)
+
 <br>
 
 ## ⚙️ Core Concepts
@@ -90,6 +94,9 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
   <img src="./readme/code.png">
   <sup><a href="https://github.com/JWalkerMailly/Derma-Github-Theme"><em>Derma-Github-Theme</em></a></sup>
 </div>
+
+> [!NOTE]
+> The code viewer can be found here: [DCodeViewer](https://github.com/JWalkerMailly/DCodeViewer)
 
 ### 🎨 Image & Texture Formats
 
