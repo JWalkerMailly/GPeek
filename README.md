@@ -64,6 +64,7 @@ The system uses coroutine-based batching to prevent frame spikes:
 |------|------------|
 | gpeek_batch_size | Number of files processed per coroutine batch |
 | gpeek_batch_delay | Delay between async batches |
+| gpeek_multi_addon | Allow expanding multiple addons |
 
 <br>
 
