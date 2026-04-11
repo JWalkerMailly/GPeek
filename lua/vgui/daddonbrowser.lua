@@ -111,6 +111,8 @@ function PANEL:BuildAddonNodeAsync(path, dir, parent, cancellationToken)
 		self:BatchProcessAddonDataAsync(cancellationToken, files,   self.BuildAddonFileNode,   parent, dir)
 	end)
 
+	local batchDelay = GetConVar("gpeek_batch_delay"):GetFloat()
+
 	local function processNode()
 
 		if (cancellationToken.Cancelled) then return end
@@ -118,7 +120,7 @@ function PANEL:BuildAddonNodeAsync(path, dir, parent, cancellationToken)
 		if (!IsValid(self)) then return end
 
 		coroutine.resume(co)
-		timer.Simple(0, processNode)
+		timer.Simple(batchDelay, processNode)
 	end
 
 	processNode()
@@ -137,9 +139,9 @@ end
 -- @param path string The addon path or search path root used for file lookups.
 function PANEL:BatchProcessAddonDataAsync(cancellationToken, data, processor, parent, dir, path)
 
-	local batchSize = 10
-	local count = 0
+	local batchSize = GetConVar("gpeek_batch_size"):GetInt()
 
+	local count = 0
 	for k,v in ipairs(data) do
 
 		if (cancellationToken.Cancelled) then return end
