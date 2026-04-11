@@ -196,6 +196,13 @@ gPeek is built around:
 
 <br>
 
+## 📦 Dependencies
+
+- [DCodeViewer](https://github.com/JWalkerMailly/DCodeViewer)
+- [Particle Effects+](https://github.com/NO-LOAFING/ParticleEffectsPlus) - Optional, opt-in only
+
+<br>
+
 ## 📖 Summary
 
 gPeek is a plugin-based addon inspection framework for Garry’s Mod. It functions as a developer toolbox for inspecting the game’s addon ecosystem in real time. This project was mainly made for fun in my spare time, contributions are always welcome.
