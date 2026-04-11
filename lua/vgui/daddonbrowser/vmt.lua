@@ -91,12 +91,9 @@ end
 EXT.Browse = function(filePath, hideMat)
 
 	local image = removeFirstFolder(filePath)
-	EXT.Image.Material = Material(image)
 
-	-- unfortunately, the only reliable way of fixing VGUI's FOUC.
-	timer.Simple(0, function()
-		if (IsValid(EXT.Image)) then EXT.Image:SetImage(image) end
-	end)
+	EXT.Image.Material = Material(image)
+	EXT.Image:SetImage(image)
 
 	if (hideMat) then
 		EXT.Tabs:SetActiveTab(EXT.Tabs:GetItems()[1].Tab)
