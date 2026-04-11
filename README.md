@@ -119,7 +119,7 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 
 | Extension | Viewer | Description |
 |----------|--------|-------------|
-| `.mdl` | Model Viewer | 3D model preview with skin + bodygroup controls |
+| `.mdl` | Model Viewer | 3D model preview with animation, skin and bodygroup controls |
 
 <div>
   <img src="./readme/mdl.png">
