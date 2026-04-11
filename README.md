@@ -9,6 +9,7 @@ A modular Garry’s Mod addon inspection and file browsing framework built aroun
 
 <div>
   <img src="./readme/preview.png">
+  <sup><a href="https://github.com/JWalkerMailly/Derma-Github-Theme"><em>Derma-Github-Theme</em></a></sup>
 </div>
 <br>
 
@@ -87,6 +88,7 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 
 <div>
   <img src="./readme/code.png">
+  <sup><a href="https://github.com/JWalkerMailly/Derma-Github-Theme"><em>Derma-Github-Theme</em></a></sup>
 </div>
 
 ### 🎨 Image & Texture Formats
@@ -99,6 +101,7 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 
 <div>
   <img src="./readme/vmt.png">
+  <sup><a href="https://github.com/JWalkerMailly/Derma-Github-Theme"><em>Derma-Github-Theme</em></a></sup>
 </div>
 
 ### 🎮 Model Format
@@ -109,6 +112,7 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 
 <div>
   <img src="./readme/mdl.png">
+  <sup><a href="https://github.com/JWalkerMailly/Derma-Github-Theme"><em>Derma-Github-Theme</em></a></sup>
 </div>
 
 ### 🔊 Audio Formats
@@ -121,6 +125,7 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 
 <div>
   <img src="./readme/wav.png">
+  <sup><a href="https://github.com/JWalkerMailly/Derma-Github-Theme"><em>Derma-Github-Theme</em></a></sup>
 </div>
 
 ### 🔤 Font Format
@@ -131,6 +136,7 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 
 <div>
   <img src="./readme/ttf.png">
+  <sup><a href="https://github.com/JWalkerMailly/Derma-Github-Theme"><em>Derma-Github-Theme</em></a></sup>
 </div>
 
 ### 💥 Particle Format
@@ -141,6 +147,7 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 
 <div>
   <img src="./readme/particles.png">
+  <sup><a href="https://github.com/JWalkerMailly/Derma-Github-Theme"><em>Derma-Github-Theme</em></a></sup>
 </div>
 
 <br>
