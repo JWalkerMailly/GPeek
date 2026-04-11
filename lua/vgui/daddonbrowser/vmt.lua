@@ -93,7 +93,11 @@ EXT.Browse = function(filePath, hideMat)
 	local image = removeFirstFolder(filePath)
 
 	EXT.Image.Material = Material(image)
-	EXT.Image:SetImage(image)
+	EXT.Image:SetImage("gpeek_fouc.png")
+	timer.Create("gpeek_fouc_fix", 0, 1, function()
+		if (!IsValid(EXT.Image)) then return end
+		EXT.Image:SetImage(image)
+	end)
 
 	if (hideMat) then
 		EXT.Tabs:SetActiveTab(EXT.Tabs:GetItems()[1].Tab)

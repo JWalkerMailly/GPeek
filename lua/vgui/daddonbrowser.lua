@@ -286,10 +286,8 @@ function PANEL:SetContent(content)
 	if (!IsValid(content)) then	return end
 
 	-- display new content now.
-	content:SetVisible(false)
 	self.HorizontalDivider:SetRight(content)
 	self.HorizontalDivider:InvalidateLayout(true)
-	content:SetVisible(true)
 end
 
 --- Invalidation
