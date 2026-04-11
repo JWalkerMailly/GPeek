@@ -2,6 +2,8 @@
 DPanel (EXT.Container)
 ├── DScrollPanel (EXT.Scroll)
 │     └── DSizeToContents (EXT.Controls)
+│           ├── DComboBox (Animation)
+│           │
 │           ├── DNumSlider (Skin)
 │           │
 │           ├── DNumSlider (Bodygroups)
@@ -25,11 +27,35 @@ local EXT = {}
 
 EXT.Icon = "icon16/brick.png"
 
+function sendAnimation(model, anim, speed)
+
+	if (!IsValid(model)) then return; end
+	model:ResetSequence(model:LookupSequence(anim));
+	model:ResetSequenceInfo();
+	model:SetCycle(0);
+	model:SetPlaybackRate(math.Clamp(tonumber(speed || 1), 0.05, 3.05));
+end
+
 local function buildControls(model, modelInfo)
 
 	EXT.Controls:Clear()
 
-	local height = 5
+	local height = 35
+
+	local sequences = model:GetSequenceList()
+	local animations = vgui.Create("DComboBox", EXT.Controls)
+	animations:Dock(TOP)
+	animations:DockMargin(0, 0, 0, 5)
+	animations:SetValue("Animation...")
+
+	for k,v in pairs(sequences) do
+		animations:AddChoice(v)
+	end
+
+	animations.OnSelect = function(this, id, val, data)
+		sendAnimation(model, val)
+	end
+
 	if (modelInfo.SkinCount > 1) then
 
 		local skins = vgui.Create("DNumSlider", EXT.Controls)
@@ -68,7 +94,7 @@ local function buildControls(model, modelInfo)
 	end
 
 	EXT.Controls:InvalidateLayout(true)
-	EXT.Scroll:SetTall(math.Clamp(height, 0, 95))
+	EXT.Scroll:SetTall(math.Clamp(height, 0, 125))
 	EXT.Scroll:PerformLayout()
 end
 
@@ -91,6 +117,13 @@ EXT.Initialize = function()
 
 	EXT.ModelViewer = vgui.Create("DAdjustableModelPanel", container)
 	EXT.ModelViewer:Dock(FILL)
+	EXT.ModelViewer.Paint = function(this)
+		this.BaseClass.Paint(this)
+		if (IsValid(this:GetEntity())) then this:GetEntity():FrameAdvance() end
+	end
+	EXT.ModelViewer.LayoutEntity = function()
+		-- override
+	end
 
 	EXT.Background = vgui.Create("DCheckBoxLabel", EXT.ModelViewer)
 	EXT.Background:Dock(BOTTOM)
@@ -105,8 +138,6 @@ EXT.Initialize = function()
 end
 
 EXT.Browse = function(filePath)
-
-	EXT.FileName:DockMargin(5, 0, 0, 0)
 
 	EXT.ModelViewer:SetModel(filePath)
 
