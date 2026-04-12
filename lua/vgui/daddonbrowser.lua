@@ -18,18 +18,20 @@ PANEL.Extensions = {
 	}
 }
 
+for k,v in pairs(file.Find("vgui/daddonbrowser/*", "LUA")) do
+
+	local extension = include("vgui/daddonbrowser/" .. v)
+	local extensionName = v:match("(.+)%..+$")
+
+	PANEL.Extensions[extensionName] = extension
+
+	CreateClientConVar("gpeek_ignore_" .. extensionName, extension.Base == "error" && "1" || "0", true, false, "Show/Hide " .. extensionName .. " files in gPeek.", 0, 1)
+end
+
 --- Component initialization
 -- Initializes the DAddonBrowser panel, creating the horizontal divider layout
 -- and sidebar navigation, then loading all mounted addons into the tree.
 function PANEL:Init()
-
-	for k,v in pairs(file.Find("vgui/daddonbrowser/*", "LUA")) do
-
-		local extension = include("vgui/daddonbrowser/" .. v)
-		local extensionName = v:match("(.+)%..+$")
-
-		self.Extensions[extensionName] = extension
-	end
 
 	for k,v in pairs(self.Extensions) do
 		if (!v.Base) then continue end
@@ -258,8 +260,13 @@ end
 -- @param name string The filename including extension.
 function PANEL:BuildAddonFileNode(parent, dir, name)
 
+	local fileExtension = string.GetExtensionFromFilename(name)
+	local ignore = GetConVar("gpeek_ignore_" .. fileExtension)
+
+	if (ignore && ignore:GetBool()) then return end
+
 	-- fetch file extension plugin for addon browser content.
-	local extension = self.Extensions[string.GetExtensionFromFilename(name)] || self.Extensions["error"]
+	local extension = self.Extensions[fileExtension] || self.Extensions["error"]
 	local node = parent:AddNode(name, extension.Icon)
 
 	node.DoClick = function(this)
@@ -343,3 +350,29 @@ vgui.Register("DAddonBrowser", PANEL, "EditablePanel")
 spawnmenu.AddCreationTab("gPeek", function()
 	return vgui.Create("DAddonBrowser")
 end, "icon16/gpeek.png", 999, "#gpeek.spawnmenu.daddonbrowser.tooltip")
+
+hook.Add("PopulateToolMenu", "gPeek", function()
+
+	spawnmenu.AddToolMenuOption("Utilities", "User", "gPeek", "#gpeek.settings", "", "", function(pnl)
+
+		pnl:Clear()
+
+		pnl:CheckBox("#gpeek.settings.multiaddon", "gpeek_multi_addon")
+		pnl:ControlHelp("#gpeek.settings.multiaddon.help")
+
+		pnl:NumSlider("#gpeek.settings.batchsize", "gpeek_batch_size", 1, 100, 0)
+		pnl:ControlHelp("#gpeek.settings.batchsize.help")
+
+		pnl:NumSlider("#gpeek.settings.batchdelay", "gpeek_batch_delay", 0, 1, 2)
+		pnl:ControlHelp("#gpeek.settings.batchdelay.help")
+
+		local blacklist = vgui.Create("DLabel", pnl)
+		blacklist:Dock(TOP)
+		blacklist:DockMargin(10, 15, 0, 0)
+		blacklist:SetText("#gpeek.settings.blacklist")
+
+		for k,v in pairs(PANEL.Extensions) do
+			if (k != "error") then pnl:CheckBox("*." .. k, "gpeek_ignore_" .. k) end
+		end
+	end)
+end)
