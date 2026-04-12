@@ -2,7 +2,7 @@
 local PANEL = {}
 PANEL.Extensions = {
 
-	-- fallback
+	-- fallback, does nothing.
 	["error"] = {
 		Icon       = "icon16/page_white.png",
 		Initialize = function(container)
@@ -32,6 +32,9 @@ end
 -- Initializes the DAddonBrowser panel, creating the horizontal divider layout
 -- and sidebar navigation, then loading all mounted addons into the tree.
 function PANEL:Init()
+
+	-- Load generation is used when game content changes, cancelling all coroutines.
+	self.LoadGeneration = 0
 
 	for k,v in pairs(self.Extensions) do
 		if (!v.Base) then continue end
@@ -86,6 +89,7 @@ end
 -- sorted alphabetically by title. Unmounted addons are visually flagged.
 function PANEL:LoadAddons(searchTerm)
 
+	self.LoadGeneration = self.LoadGeneration + 1
 	self.ContentNavBar.Tree:Clear()
 
 	local addons = engine.GetAddons()
@@ -117,13 +121,15 @@ function PANEL:BuildAddonNodeAsync(path, dir, parent, cancellationToken)
 		self:BatchProcessAddonDataAsync(cancellationToken, files,   self.BuildAddonFileNode,   parent, dir)
 	end)
 
+	local generation = self.LoadGeneration
 	local batchDelay = GetConVar("gpeek_batch_delay"):GetFloat()
 
 	local function processNode()
 
+		if (!IsValid(self)) then return end
+		if (self.LoadGeneration != generation) then return end
 		if (cancellationToken.Cancelled) then return end
 		if (coroutine.status(co) == "dead") then return end
-		if (!IsValid(self)) then return end
 
 		coroutine.resume(co)
 		timer.Simple(batchDelay, processNode)
@@ -199,10 +205,11 @@ function PANEL:BuildAddonFolderNode(parent, dir, name, path, resolvedPath, mount
 			if (!this.Built) then
 				self:BuildAddonNodeAsync(path, resolvedPath, this, this.CancellationToken)
 			end
+
+			self:HandleAddonRootCollapse(parent, this)
 		end
 
 		this.Built = !wasExpanded
-		self:HandleAddonRootCollapse(parent, this)
 	end
 
 	node.DoRightClick = function(this)
@@ -287,7 +294,9 @@ function PANEL:BuildAddonFileNode(parent, dir, name)
 			SetClipboardText(dir .. "/" .. name)
 		end):SetIcon("icon16/page_copy.png")
 
-		extension.RightClick(menu, dir .. "/" .. name)
+		if (extension.RightClick) then
+			extension.RightClick(menu, dir .. "/" .. name)
+		end
 
 		menu:Open()
 	end
