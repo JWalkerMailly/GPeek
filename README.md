@@ -20,6 +20,13 @@ A modular Garry’s Mod addon inspection and file browsing framework built aroun
 
 <br>
 
+## ⬇️ How to Install
+
+It is recommended to use the Workshop release.\
+If you wish to clone the repository instead, you also need [DCodeViewer](https://github.com/JWalkerMailly/DCodeViewer).
+
+<br>
+
 ## ⚙️ Core Concepts
 
 ### Extension System
