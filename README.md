@@ -163,7 +163,7 @@ Built-in or supported viewers. Extensions are stateless definitions, but runtime
 
 <br>
 
-## 🚀 Performance Systems
+## 🚀 Optimizations
 
 ### Coroutine Batch Processing
 Large directory trees are processed using:
@@ -187,7 +187,7 @@ Folder nodes track cancellation state:
 
 <br>
 
-## ✏️ Design Philosophy
+## ✏️ Architecture
 
 gPeek is built around:
 
