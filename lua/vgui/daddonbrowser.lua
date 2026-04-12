@@ -347,9 +347,17 @@ end
 
 vgui.Register("DAddonBrowser", PANEL, "EditablePanel")
 
+local _spawnMenuInstance
+
 spawnmenu.AddCreationTab("gPeek", function()
-	return vgui.Create("DAddonBrowser")
+	_spawnMenuInstance = vgui.Create("DAddonBrowser")
+	return _spawnMenuInstance
 end, "icon16/gpeek.png", 999, "#gpeek.spawnmenu.daddonbrowser.tooltip")
+
+hook.Add("GameContentChanged", "gPeek", function()
+	if (!IsValid(_spawnMenuInstance)) then return end
+	_spawnMenuInstance:LoadAddons()
+end)
 
 hook.Add("PopulateToolMenu", "gPeek", function()
 
