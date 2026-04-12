@@ -7,6 +7,8 @@
 
 A modular Garry’s Mod addon inspection and file browsing framework built around a plugin-based UI system. gPeek provides a unified interface for browsing installed addons, inspecting files, and rendering content through extensible viewers (code, models, fonts, materials, audio, and particles).
 
+[Get it on the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3705662940)
+
 <div>
   <img src="./readme/preview.png">
   <sup><a href="https://github.com/JWalkerMailly/Derma-Github-Theme"><em>Derma-Github-Theme</em></a></sup>
@@ -22,7 +24,7 @@ A modular Garry’s Mod addon inspection and file browsing framework built aroun
 
 ## ⬇️ How to Install
 
-It is recommended to use the Workshop release.\
+It is recommended to use the [Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3705662940) release.\
 If you wish to clone the repository instead, you also need [DCodeViewer](https://github.com/JWalkerMailly/DCodeViewer).
 
 <br>
