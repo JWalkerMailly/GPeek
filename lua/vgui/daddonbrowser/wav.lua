@@ -76,6 +76,7 @@ EXT.Initialize = function()
 end
 
 EXT.Browse = function(filePath)
+	EXT.Invalidate()
 	sound.PlayFile(filePath, "noblock", spectrum)
 end
 
