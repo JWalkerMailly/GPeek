@@ -28,6 +28,11 @@ for k,v in pairs(file.Find("vgui/daddonbrowser/*", "LUA")) do
 	CreateClientConVar("gpeek_ignore_" .. extensionName, extension.Base == "error" && "1" || "0", true, false, "Show/Hide " .. extensionName .. " files in gPeek.", 0, 1)
 end
 
+-- caching.
+local gpeek_batch_size  = GetConVar("gpeek_batch_size")
+local gpeek_batch_delay = GetConVar("gpeek_batch_delay")
+local gpeek_multi_addon = GetConVar("gpeek_multi_addon")
+
 --- Component initialization
 -- Initializes the DAddonBrowser panel, creating the horizontal divider layout
 -- and sidebar navigation, then loading all mounted addons into the tree.
@@ -122,7 +127,7 @@ function PANEL:BuildAddonNodeAsync(path, dir, parent, cancellationToken)
 	end)
 
 	local generation = self.LoadGeneration
-	local batchDelay = GetConVar("gpeek_batch_delay"):GetFloat()
+	local batchDelay = gpeek_batch_delay:GetFloat()
 
 	local function processNode()
 
@@ -151,7 +156,7 @@ end
 -- @param path string The addon path or search path root used for file lookups.
 function PANEL:BatchProcessAddonDataAsync(cancellationToken, data, processor, parent, dir, path)
 
-	local batchSize = GetConVar("gpeek_batch_size"):GetInt()
+	local batchSize = gpeek_batch_size:GetInt()
 
 	local count = 0
 	for k,v in ipairs(data) do
@@ -239,7 +244,7 @@ end
 function PANEL:HandleAddonRootCollapse(parent, node)
 
 	if (parent != self.ContentNavBar.Tree) then return end
-	if (GetConVar("gpeek_multi_addon"):GetBool()) then return end
+	if (gpeek_multi_addon:GetBool()) then return end
 
 	local currentAddon = self.CurrentAddon
 
