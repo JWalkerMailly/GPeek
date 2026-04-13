@@ -321,7 +321,13 @@ function PANEL:OpenAddonFile(extension, filePath)
 		base.FileName:DockMargin(5, 0, 0, 5)
 		base.FileName:SetDark(true)
 
-		extension.Initialize(base.Container)
+		if (!pcall(extension.Initialize, base.Container)) then
+			MsgN("[gPeek] Extension failed to initialize: " .. filePath)
+			base.Container:Remove()
+			base.Container = nil
+			return
+		end
+
 		self:SetContent(base.Container)
 	end
 

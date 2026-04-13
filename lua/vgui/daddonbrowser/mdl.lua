@@ -25,7 +25,7 @@ local EXT = {}
 
 EXT.Icon = "icon16/brick.png"
 
-function sendAnimation(model, anim, speed)
+local function sendAnimation(model, anim, speed)
 
 	if (!IsValid(model)) then return; end
 	model:ResetSequence(model:LookupSequence(anim));
