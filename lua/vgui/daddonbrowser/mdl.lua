@@ -10,15 +10,14 @@ DPanel (EXT.Container)
 │
 └── DPanel (container)
       ├── Paint:
-      │     - Background color toggle (white/black via EXT.Background)
+      │     - Background color toggle (EXT.ColorPalette)
       │
       └── DAdjustableModelPanel (EXT.ModelViewer)
             ├── Displays model from filePath
             │
             ├── Camera configuration
             │
-            └── DCheckBoxLabel (EXT.Background)
-                  - Toggles background inversion
+            └── DColorPalette (EXT.ColorPalette)
 ]]
 
 local EXT = {}
@@ -96,6 +95,10 @@ local function buildControls(model, modelInfo)
 	EXT.Scroll:PerformLayout()
 end
 
+local gpeek_background_r = GetConVar("gpeek_background_r")
+local gpeek_background_g = GetConVar("gpeek_background_g")
+local gpeek_background_b = GetConVar("gpeek_background_b")
+
 EXT.Initialize = function()
 
 	EXT.Scroll = vgui.Create("DScrollPanel", EXT.Container)
@@ -109,7 +112,7 @@ EXT.Initialize = function()
 	local container = vgui.Create("DPanel", EXT.Container)
 	container:Dock(FILL)
 	container.Paint = function(this)
-		surface.SetDrawColor(EXT.Background:GetChecked() && color_white || color_black)
+		surface.SetDrawColor(gpeek_background_r:GetInt(), gpeek_background_g:GetInt(), gpeek_background_b:GetInt())
 		this:DrawFilledRect()
 	end
 
@@ -123,16 +126,12 @@ EXT.Initialize = function()
 		-- override
 	end
 
-	EXT.Background = vgui.Create("DCheckBoxLabel", EXT.ModelViewer)
-	EXT.Background:Dock(BOTTOM)
-	EXT.Background:DockMargin(5, 0, 0, 5)
-	EXT.Background:SetText("#gpeek.extensions.mdl.invert")
-	EXT.Background:SetValue(false)
-	EXT.Background:SetDark(false)
-	EXT.Background.OnChange = function(this, val)
-		this:SetDark(val)
-		this:InvalidateChildren()
-	end
+	EXT.ColorPalette = vgui.Create("DColorPalette", EXT.ModelViewer)
+	EXT.ColorPalette:Dock(TOP)
+	EXT.ColorPalette:DockMargin(5, 5, 0, 0)
+	EXT.ColorPalette:SetConVarR("gpeek_background_r")
+	EXT.ColorPalette:SetConVarG("gpeek_background_g")
+	EXT.ColorPalette:SetConVarB("gpeek_background_b")
 end
 
 EXT.Browse = function(filePath)

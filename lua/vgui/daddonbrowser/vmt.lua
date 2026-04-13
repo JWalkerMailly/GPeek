@@ -6,13 +6,12 @@ DPanel (EXT.Container)
      │     │
      │     ├── DPanel (imageContainer)
      │     │     ├── Paint:
-     │     │     │     - Background color toggle (white/black via EXT.Background)
+     │     │     │     - Background color toggle (EXT.ColorPalette)
      │     │     │
      │     │     └── DImageButton (EXT.Image)
      │     │           - Displays material texture
      │     │
-     │     └── DCheckBoxLabel (EXT.Background)
-     │           - Toggles background inversion
+     │     └── DColorPalette (EXT.ColorPalette)
      │
      └── Material Tab (DPanel)
            └── DCodeViewer (EXT.CodeViewer)
@@ -26,6 +25,10 @@ EXT.Icon = "icon16/script_palette.png"
 local function removeFirstFolder(path)
 	return path:match("^[^/]+/(.+)$") || path
 end
+
+local gpeek_background_r = GetConVar("gpeek_background_r")
+local gpeek_background_g = GetConVar("gpeek_background_g")
+local gpeek_background_b = GetConVar("gpeek_background_b")
 
 EXT.Initialize = function()
 
@@ -46,17 +49,22 @@ EXT.Initialize = function()
 	txtScale:DockMargin(5, 0, 0, 5)
 	txtScale.OnValueChanged = function(this, val)
 		EXT.Image.Scale = val
+		EXT.Image:InvalidateLayout(true)
 	end
 
 	local imageContainer = vgui.Create("DPanel", textureTab)
 	imageContainer:Dock(FILL)
+
 	imageContainer.Paint = function(this)
-		surface.SetDrawColor(EXT.Background:GetChecked() && color_white || color_black)
+		surface.SetDrawColor(gpeek_background_r:GetInt(), gpeek_background_g:GetInt(), gpeek_background_b:GetInt())
 		this:DrawFilledRect()
 	end
 
+	imageContainer.PerformLayout = function()
+		EXT.Image:PerformLayout(EXT.Container:GetWide(), EXT.Container:GetTall())
+	end
+
 	EXT.Image = vgui.Create("DImageButton", imageContainer)
-	EXT.Image:Dock(FILL)
 	EXT.Image.Scale = 1
 
 	EXT.Image.PerformLayout = function(this, w, h)
@@ -90,16 +98,12 @@ EXT.Initialize = function()
 		menu:Open()
 	end
 
-	EXT.Background = vgui.Create("DCheckBoxLabel", imageContainer)
-	EXT.Background:Dock(BOTTOM)
-	EXT.Background:DockMargin(5, 0, 0, 5)
-	EXT.Background:SetText("#gpeek.extensions.vmt.invert")
-	EXT.Background:SetValue(false)
-	EXT.Background:SetDark(false)
-	EXT.Background.OnChange = function(this, val)
-		this:SetDark(val)
-		this:InvalidateChildren()
-	end
+	EXT.ColorPalette = vgui.Create("DColorPalette", imageContainer)
+	EXT.ColorPalette:Dock(TOP)
+	EXT.ColorPalette:DockMargin(5, 5, 0, 0)
+	EXT.ColorPalette:SetConVarR("gpeek_background_r")
+	EXT.ColorPalette:SetConVarG("gpeek_background_g")
+	EXT.ColorPalette:SetConVarB("gpeek_background_b")
 
 	local materialTab = vgui.Create("DPanel")
 	EXT.Tabs:AddSheet("#gpeek.extensions.vmt.material", materialTab, "icon16/palette.png")
@@ -117,6 +121,7 @@ EXT.Browse = function(filePath, hideMat)
 	timer.Create("gpeek_fouc_fix", 0, 1, function()
 		if (!IsValid(EXT.Image)) then return end
 		EXT.Image:SetImage(image)
+		EXT.Image:PerformLayout(EXT.Container:GetWide(), EXT.Container:GetTall())
 	end)
 
 	if (hideMat) then
