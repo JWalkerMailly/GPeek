@@ -13,7 +13,7 @@ PANEL.Extensions = {
 			msg:SetDark(true)
 		end,
 		Browse     = function() end,
-		RightClick = function()	end,
+		RightClick = function() end,
 		Invalidate = function() end
 	}
 }
@@ -353,7 +353,7 @@ function PANEL:SetContent(content)
 		currentContent:Remove()
 	end
 
-	if (!IsValid(content)) then	return end
+	if (!IsValid(content)) then return end
 
 	-- display new content now.
 	self.HorizontalDivider:SetRight(content)
