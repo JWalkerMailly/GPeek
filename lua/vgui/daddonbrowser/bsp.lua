@@ -1,7 +1,7 @@
 
 local EXT = {}
 
-EXT.Base = "error"
+EXT.BaseClass = "error"
 EXT.Icon = "icon16/map_edit.png"
 
 EXT.Initialize = function(container)

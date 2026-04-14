@@ -25,7 +25,7 @@ for k,v in pairs(file.Find("vgui/daddonbrowser/*", "LUA")) do
 
 	PANEL.Extensions[extensionName] = extension
 
-	CreateClientConVar("gpeek_ignore_" .. extensionName, extension.Base == "error" && "1" || "0", true, false, "Show/Hide " .. extensionName .. " files in gPeek.", 0, 1)
+	CreateClientConVar("gpeek_ignore_" .. extensionName, extension.BaseClass == "error" && "1" || "0", true, false, "Show/Hide " .. extensionName .. " files in gPeek.", 0, 1)
 end
 
 -- caching.
@@ -42,8 +42,8 @@ function PANEL:Init()
 	self.LoadGeneration = 0
 
 	for k,v in pairs(self.Extensions) do
-		if (!v.Base) then continue end
-		v.Base = self.Extensions[v.Base]
+		if (!v.BaseClass) then continue end
+		v.Base = self.Extensions[v.BaseClass]
 	end
 
 	self.HorizontalDivider = vgui.Create("DHorizontalDivider", self)

@@ -1,7 +1,7 @@
 
 local EXT = {}
 
-EXT.Base = "wav" -- resolved at runtime
+EXT.BaseClass = "wav" -- resolved at runtime
 EXT.Icon = "icon16/sound.png"
 
 EXT.Initialize = function()

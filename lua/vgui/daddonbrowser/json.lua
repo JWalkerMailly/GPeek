@@ -1,7 +1,7 @@
 
 local EXT = {}
 
-EXT.Base = "lua" -- resolved at runtime
+EXT.BaseClass = "lua" -- resolved at runtime
 EXT.Icon = "icon16/script.png"
 
 EXT.Initialize = function()
