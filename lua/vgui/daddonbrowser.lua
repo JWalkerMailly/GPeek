@@ -1,32 +1,5 @@
 
 local PANEL = {}
-PANEL.Extensions = {
-
-	-- fallback, does nothing.
-	["error"] = {
-		Icon       = "icon16/page_white.png",
-		Initialize = function(container)
-			local msg = vgui.Create("DLabel", container)
-			msg:Dock(TOP)
-			msg:DockMargin(5, 0, 5, 0)
-			msg:SetText("#gpeek.extensions.error.message")
-			msg:SetDark(true)
-		end,
-		Browse     = function() end,
-		RightClick = function() end,
-		Invalidate = function() end
-	}
-}
-
-for k,v in pairs(file.Find("vgui/daddonbrowser/*", "LUA")) do
-
-	local extension = include("vgui/daddonbrowser/" .. v)
-	local extensionName = v:match("(.+)%..+$")
-
-	PANEL.Extensions[extensionName] = extension
-
-	CreateClientConVar("gpeek_ignore_" .. extensionName, extension.BaseClass == "error" && "1" || "0", true, false, "Show/Hide " .. extensionName .. " files in gPeek.", 0, 1)
-end
 
 -- caching.
 local gpeek_batch_size   = GetConVar("gpeek_batch_size")
@@ -34,18 +7,64 @@ local gpeek_batch_delay  = GetConVar("gpeek_batch_delay")
 local gpeek_multi_addon  = GetConVar("gpeek_multi_addon")
 local gpeek_legacy_addon = GetConVar("gpeek_legacy_addon")
 
---- Component initialization
--- Initializes the DAddonBrowser panel, creating the horizontal divider layout
--- and sidebar navigation, then loading all mounted addons into the tree.
-function PANEL:Init()
+local function extensionsIterator()
 
-	-- Load generation is used when game content changes, cancelling all coroutines.
-	self.LoadGeneration = 0
+	local i = 0
+	local files = file.Find("vgui/daddonbrowser/*", "LUA")
+	return function()
+
+		i = i + 1
+
+		if (files[i]) then
+			return i, { fileName = files[i], fileExtension = files[i]:match("(.+)%..+$") }
+		end
+	end
+end
+
+function PANEL:Setup()
+
+	self.Extensions = {
+
+		-- fallback, does nothing.
+		["error"] = {
+			Icon       = "icon16/page_white.png",
+			Initialize = function(container)
+				local msg = vgui.Create("DLabel", container)
+				msg:Dock(TOP)
+				msg:DockMargin(5, 0, 5, 0)
+				msg:SetText("#gpeek.extensions.error.message")
+				msg:SetDark(true)
+			end,
+			Browse     = function() end,
+			RightClick = function() end,
+			Invalidate = function() end
+		}
+	}
+
+	for k,v in extensionsIterator() do
+
+		local extension = include("vgui/daddonbrowser/" .. v.fileName)
+
+		self.Extensions[v.fileExtension] = extension
+
+		CreateClientConVar("gpeek_ignore_" .. v.fileExtension, extension.BaseClass == "error" && "1" || "0", true, false, "Show/Hide " .. v.fileExtension .. " files in gPeek.", 0, 1)
+	end
 
 	for k,v in pairs(self.Extensions) do
 		if (!v.BaseClass) then continue end
 		v.Base = self.Extensions[v.BaseClass]
 	end
+end
+
+--- Component initialization
+-- Initializes the DAddonBrowser panel, creating the horizontal divider layout
+-- and sidebar navigation, then loading all mounted addons into the tree.
+function PANEL:Init()
+
+	self:Setup()
+
+	-- Load generation is used when game content changes, cancelling all coroutines.
+	self.LoadGeneration = 0
 
 	self.HorizontalDivider = vgui.Create("DHorizontalDivider", self)
 	self.HorizontalDivider:Dock(FILL)
@@ -412,18 +431,28 @@ end
 
 vgui.Register("DAddonBrowser", PANEL, "EditablePanel")
 
+local gPeekZero = vgui.GetControlTable("DAddonBrowser")
 spawnmenu.AddCreationTab("gPeek", function()
 
-	local gpeek = vgui.Create("DAddonBrowser")
+	local gPeek = vgui.CreateFromTable(gPeekZero)
+	local id = tostring(gPeek)
 
 	cvars.AddChangeCallback("gpeek_legacy_addon", function()
-		if (IsValid(gpeek)) then gpeek:LoadAddons() end
-	end)
+		if (IsValid(gPeek)) then gPeek:LoadAddons() end
+	end, "gpeek_legacy_addon" .. "_" .. id)
 
-	return gpeek
+	local oldOnRemove = gPeek.OnRemove
+	gPeek.OnRemove = function(self)
+		cvars.RemoveChangeCallback("gpeek_legacy_addon", "gpeek_legacy_addon" .. "_" .. id)
+		if (oldOnRemove) then oldOnRemove(self) end
+	end
+
+	return gPeek
+
 end, "icon16/gpeek.png", 999, "#gpeek.spawnmenu.daddonbrowser.tooltip")
 
-hook.Add("PopulateToolMenu", "gPeek", function()
+local anonymous = { IsValid = function() return true end }
+hook.Add("PopulateToolMenu", anonymous, function()
 
 	spawnmenu.AddToolMenuOption("Utilities", "User", "gPeek", "#gpeek.settings", "", "", function(pnl)
 
@@ -446,8 +475,8 @@ hook.Add("PopulateToolMenu", "gPeek", function()
 		blacklist:DockMargin(10, 15, 0, 0)
 		blacklist:SetText("#gpeek.settings.blacklist")
 
-		for k,v in pairs(PANEL.Extensions) do
-			if (k != "error") then pnl:CheckBox("*." .. k, "gpeek_ignore_" .. k) end
+		for k,v in extensionsIterator() do
+			pnl:CheckBox("*." .. v.fileExtension, "gpeek_ignore_" .. v.fileExtension)
 		end
 	end)
 end)
