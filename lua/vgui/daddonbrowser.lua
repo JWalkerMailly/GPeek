@@ -18,6 +18,16 @@ PANEL.Extensions = {
 	}
 }
 
+for k,v in pairs(file.Find("vgui/daddonbrowser/*", "LUA")) do
+
+	local extension = include("vgui/daddonbrowser/" .. v)
+	local extensionName = v:match("(.+)%..+$")
+
+	PANEL.Extensions[extensionName] = extension
+
+	CreateClientConVar("gpeek_ignore_" .. extensionName, extension.BaseClass == "error" && "1" || "0", true, false, "Show/Hide " .. extensionName .. " files in gPeek.", 0, 1)
+end
+
 -- caching.
 local gpeek_batch_size   = GetConVar("gpeek_batch_size")
 local gpeek_batch_delay  = GetConVar("gpeek_batch_delay")
@@ -31,16 +41,6 @@ function PANEL:Init()
 
 	-- Load generation is used when game content changes, cancelling all coroutines.
 	self.LoadGeneration = 0
-
-	for k,v in pairs(file.Find("vgui/daddonbrowser/*", "LUA")) do
-
-		local extension = include("vgui/daddonbrowser/" .. v)
-		local extensionName = v:match("(.+)%..+$")
-
-		self.Extensions[extensionName] = extension
-
-		CreateClientConVar("gpeek_ignore_" .. extensionName, extension.BaseClass == "error" && "1" || "0", true, false, "Show/Hide " .. extensionName .. " files in gPeek.", 0, 1)
-	end
 
 	for k,v in pairs(self.Extensions) do
 		if (!v.BaseClass) then continue end
