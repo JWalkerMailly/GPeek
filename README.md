@@ -211,6 +211,7 @@ gPeek is built around:
 ## 📦 Dependencies
 
 - [DCodeViewer](https://github.com/JWalkerMailly/DCodeViewer)
+- [DAddonMap](https://github.com/JWalkerMailly/DAddonMap)
 - [Particle Effects+](https://github.com/NO-LOAFING/ParticleEffectsPlus) - Optional, opt-in only
 
 <br>
