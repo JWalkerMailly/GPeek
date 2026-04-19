@@ -1,12 +1,10 @@
 
-AddCSLuaFile()
-
 --- ttfname.lua
 -- Reads the font name from a TTF file by parsing the OpenType name table.
 -- Prioritizes English (Windows platform, UTF-16BE) with Mac platform as fallback.
 -- Returns the full font name; nameID 4, falling back to family name; nameID 1.
 -- https://learn.microsoft.com/en-us/typography/opentype/spec/name
-ttfname = {}
+module("ttfname", package.seeall)
 
 local function readU16(data, offset)
 
@@ -109,7 +107,7 @@ end
 -- Unicode BMP, English US, nameID 4
 -- @param data string Raw binary contents of the TTF file.
 -- @return string|nil The font name, or nil.
-function ttfname.readFromData(data)
+function ReadFromData(data)
 
 	if (!data || #data < 12) then return nil end
 
@@ -212,12 +210,10 @@ end
 -- @param filePath string Path to the TTF file.
 -- @param searchPath string GLua search path.
 -- @return string|nil The font name, or nil on failure.
-function ttfname.readFromFile(filePath, searchPath)
+function ReadFromFile(filePath, searchPath)
 
 	local data = file.Read(filePath, searchPath || "GAME")
 	if (!data) then return nil end
 
-	return ttfname.readFromData(data)
+	return ReadFromData(data)
 end
-
-return ttfname

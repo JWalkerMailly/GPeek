@@ -104,8 +104,12 @@ function PANEL:CreateSearchBar()
 	searchButton:DockMargin(4, 2, 4, 2)
 	searchButton:SetSize(16, 16)
 	searchButton:SetTooltip("#spawnmenu.press_search")
-	searchButton.DoClick = function (this)
+	searchButton.DoClick = function(this)
 		self.Search:OnEnter(self.Search:GetText())
+	end
+	searchButton.DoRightClick = function(this)
+		self.Search:SetText("")
+		self:LoadAddons()
 	end
 end
 
@@ -408,14 +412,42 @@ function PANEL:SetContent(content)
 
 	local currentContent = self.HorizontalDivider:GetRight()
 
-	-- dispose of old content completely for memory.
+	if (!IsValid(content)) then
+
+		if (!IsValid(self.Heatmap)) then
+
+			self.Heatmap = vgui.Create("DAddonMap")
+			self.Heatmap.OnClickAddon = function(this, addon)
+				self.Search:SetText(addon.title)
+				self:LoadAddons(addon.title)
+			end
+			self.Heatmap.OnRightClickAddon = function(this, addon)
+
+				local menu = DermaMenu()
+
+				menu:AddOption("#spawnmenu.openaddononworkshop", function()
+					steamworks.ViewFile(addon.wsid)
+				end):SetIcon("icon16/link_go.png")
+
+				menu:Open()
+			end
+		end
+
+		if (currentContent == self.Heatmap) then return end
+		if (IsValid(currentContent)) then
+			currentContent:Remove()
+		end
+
+		self.HorizontalDivider:SetRight(self.Heatmap)
+		return
+	end
+
+	if (currentContent == content) then return end
+
 	if (IsValid(currentContent)) then
 		currentContent:Remove()
 	end
 
-	if (!IsValid(content)) then return end
-
-	-- display new content now.
 	self.HorizontalDivider:SetRight(content)
 	self.HorizontalDivider:InvalidateLayout(true)
 end

@@ -103,7 +103,7 @@ end
 
 EXT.Browse = function(filePath)
 
-	local font = ttfname.readFromFile(filePath)
+	local font = ttfname.ReadFromFile(filePath)
 	if (font && !FONTS[font]) then
 
 		surface.CreateFont("gPeek " .. font, {
