@@ -78,6 +78,18 @@ The system uses coroutine-based batching to prevent frame spikes:
 | gpeek_batch_delay | Delay between async batches |
 | gpeek_multi_addon | Allow expanding multiple addons |
 
+### Addon Size Map
+
+Offers a centralized way to inspect which addons are eating up the most space.
+
+<div>
+  <img src="./readme/addon-heatmap-gif.gif"><br>
+  <sup><a href="https://github.com/JWalkerMailly/Derma-Github-Theme"><em>Derma-Github-Theme</em></a></sup>
+</div>
+
+> [!NOTE]
+> The addon map can be found here: [DAddonMap](https://github.com/JWalkerMailly/DAddonMap)
+
 <br>
 
 ## 🧩 Extension Types
