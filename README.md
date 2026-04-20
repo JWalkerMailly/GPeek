@@ -25,7 +25,7 @@ A modular Garry’s Mod addon inspection and file browsing framework built aroun
 ## ⬇️ How to Install
 
 It is recommended to use the [Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3705662940) release.\
-If you wish to clone the repository instead, you also need [DCodeViewer](https://github.com/JWalkerMailly/DCodeViewer).
+If you wish to clone the repository instead, you also need [DCodeViewer](https://github.com/JWalkerMailly/DCodeViewer) and [DAddonMap](https://github.com/JWalkerMailly/DAddonMap).
 
 <br>
 
