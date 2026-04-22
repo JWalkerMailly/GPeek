@@ -3,6 +3,10 @@
   gPeek
 </h1>
 
+![Steam Downloads](https://img.shields.io/steam/downloads/3705662940)
+![Steam Favorites](https://img.shields.io/steam/favorites/3705662940)
+![Steam File Size](https://img.shields.io/steam/size/3705662940)
+
 *Browsing the inner machinations*
 
 A modular Garry’s Mod addon inspection and file browsing framework built around a plugin-based UI system. gPeek provides a unified interface for browsing installed addons, inspecting files, and rendering content through extensible viewers (code, models, fonts, materials, audio, and particles).
